@@ -1,0 +1,878 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Tadbir Console">
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>Tadbir — Console d'administration</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MCA0MCI+PHBhdGggZD0iTTIwIDEuNWwxNiA5LjI1djE4LjVMMjAgMzguNSA0IDI5LjI1di0xOC41eiIgZmlsbD0iIzBlM2E0YSIvPjxwYXRoIGQ9Ik0xMi41IDE0aDE1TTIwIDE0djEzIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMy40IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48Y2lyY2xlIGN4PSIyNyIgY3k9IjI1LjUiIHI9IjIiIGZpbGw9IiMyMmQzZWUiLz48L3N2Zz4=">
+<script>
+/* ==== Configuration Supabase (la même que dans l'application) ==== */
+window.TADBIR_CONFIG = { url: "https://vxyxbkpjtonkojclukmf.supabase.co", anonKey: "sb_publishable_lanzT2mLiGVlEotqtsQACQ_xIiCycAm" };
+</script>
+<style>
+:root{
+  --ink:#0f172a;--ink2:#334155;--mut:#64748b;--line:#e2e8f0;--bg:#f1f5f9;--card:#fff;
+  --navy:#1e293b;--navy2:#334155;--acc:#0891b2;--acc2:#ecfeff;--blue:#0891b2;--blue2:#e0f7fb;--cyan:#06b6d4;
+  --red:#c2341b;--red2:#fdeeea;--amb:#a86400;--amb2:#fff4e0;--grn:#1d7a43;--grn2:#e7f6ec;
+  --r:14px;--sh:0 1px 2px rgba(15,23,42,.05),0 8px 24px -12px rgba(15,23,42,.18);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--blue)}
+.hide{display:none!important}
+
+/* ---------- layout ---------- */
+.shell{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+.side{background:var(--navy);color:#cbd5e1;display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:11px;padding:0 8px 22px}
+.logo{width:40px;height:40px;flex:none;display:grid;place-items:center}
+.logo svg{width:40px;height:40px;display:block}
+.side .logo .hx{stroke:rgba(255,255,255,.28);stroke-width:1.2}
+.brand b{display:block;color:#fff;font-size:16px;letter-spacing:.01em}
+.brand small{color:#94a3b8;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.nav{display:grid;gap:3px}
+.nav button{all:unset;cursor:pointer;display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:#cbd5e1;font-weight:600;font-size:14px}
+.nav button svg{width:18px;height:18px;flex:none;opacity:.85}
+.nav button:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav button.on{background:rgba(255,255,255,.12);color:#fff;box-shadow:inset 3px 0 0 var(--cyan)}
+.nav .cnt{margin-inline-start:auto;background:var(--cyan);color:#fff;border-radius:999px;font-size:11px;padding:1px 7px}
+.sidefoot{margin-top:auto;padding:14px 10px 0;border-top:1px solid rgba(255,255,255,.08);font-size:12px;color:#94a3b8}
+.sidefoot b{color:#fff;font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis}
+.sidefoot button{all:unset;cursor:pointer;color:#cbd5e1;margin-top:8px;font-weight:600}
+.demo-tag{display:inline-block;background:#ffcf5c;color:#3d2a00;font-weight:700;font-size:10px;letter-spacing:.08em;padding:2px 7px;border-radius:6px;margin-top:6px}
+
+.main{padding:26px 32px 60px;min-width:0}
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.head h1{margin:0;font-size:24px;letter-spacing:-.02em}
+.head p{margin:3px 0 0;color:var(--mut)}
+.crumb{font-size:12px;color:var(--mut);margin-bottom:4px}
+.crumb button{all:unset;cursor:pointer;color:var(--blue);font-weight:600}
+
+/* ---------- elements ---------- */
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid transparent;border-radius:10px;padding:9px 14px;font-weight:650;cursor:pointer;background:var(--blue);color:#fff;white-space:nowrap}
+.btn:hover{filter:brightness(1.06)}
+.btn:disabled{opacity:.55;cursor:default}
+.btn.sec{background:#fff;color:var(--ink);border-color:var(--line)}
+.btn.sec:hover{background:#f8fafc}
+.btn.acc{background:var(--acc)}
+.btn.danger{background:#fff;color:var(--red);border-color:#f2c6bc}
+.btn.sm{padding:6px 10px;font-size:13px;border-radius:8px}
+.btn svg{width:16px;height:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh)}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.card-h h3{margin:0;font-size:15px}
+.card-h small{color:var(--mut)}
+.card-b{padding:16px 18px}
+.grid{display:grid;gap:16px}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-bottom:18px}
+.kpi{padding:16px 18px}
+.kpi span{display:block;color:var(--mut);font-size:12px;font-weight:650;text-transform:uppercase;letter-spacing:.06em}
+.kpi b{display:block;font-size:28px;letter-spacing:-.02em;margin-top:6px;font-variant-numeric:tabular-nums}
+.kpi small{color:var(--mut)}
+.two{display:grid;grid-template-columns:1.4fr 1fr;gap:16px}
+
+table{width:100%;border-collapse:collapse}
+th{text-align:start;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:700;padding:10px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:12px 14px;border-bottom:1px solid #eef2f6;vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tr.click{cursor:pointer}
+tr.click:hover td{background:#f8fafc}
+.tw{overflow-x:auto}
+.nm b{display:block}
+.nm small{color:var(--mut)}
+.num{font-variant-numeric:tabular-nums}
+
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.b-ok{background:var(--grn2);color:var(--grn)}
+.b-soon{background:var(--amb2);color:var(--amb)}
+.b-exp{background:var(--red2);color:var(--red)}
+.b-sus{background:#f1f5f9;color:#475569}
+.b-pend{background:var(--blue2);color:var(--blue)}
+.pill{display:inline-block;font-size:12px;font-weight:650;padding:2px 8px;border-radius:7px;background:#f1f5f9;color:var(--ink2)}
+
+.seats{display:flex;align-items:center;gap:9px;min-width:120px}
+.bar{flex:1;height:6px;background:#e2e8f0;border-radius:9px;overflow:hidden;min-width:50px}
+.bar i{display:block;height:100%;background:var(--acc);border-radius:9px}
+.bar i.full{background:var(--amb)}
+
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line)}
+.search{flex:1;min-width:200px;position:relative}
+.search input{width:100%;padding:9px 12px 9px 34px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--mut)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{all:unset;cursor:pointer;padding:6px 11px;border-radius:999px;border:1px solid var(--line);font-size:13px;font-weight:600;color:var(--ink2);background:#fff}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+
+.field{display:grid;gap:5px}
+.field label{font-size:12px;font-weight:700;color:var(--ink2)}
+.field input,.field select,.field textarea,.inp{padding:9px 11px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;width:100%}
+.field input:focus,.field select:focus,.field textarea:focus,.inp:focus{outline:2px solid #a5f3fc;border-color:var(--blue)}
+.field small{color:var(--mut);font-size:12px}
+.fg{align-items:start;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px}
+.fg .full{grid-column:1/-1}
+.sect{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--acc);margin:18px 0 10px}
+.sect:first-child{margin-top:0}
+
+.empty{padding:34px 18px;text-align:center;color:var(--mut)}
+.empty b{display:block;color:var(--ink);font-size:15px;margin-bottom:4px}
+.muted{color:var(--mut)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spacer{flex:1}
+
+/* detail */
+.dh{display:flex;gap:18px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;padding:20px 22px}
+.dh h2{margin:0 0 6px;font-size:22px;letter-spacing:-.02em}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line)}
+.facts div{padding:14px 22px;border-inline-end:1px solid var(--line)}
+.facts div:last-child{border-inline-end:0}
+.facts span{display:block;font-size:11.5px;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.facts b{display:block;font-size:16px;margin-top:3px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);padding:0 14px;overflow-x:auto}
+.tabs button{all:unset;cursor:pointer;padding:13px 10px;font-weight:650;color:var(--mut);border-bottom:2px solid transparent;white-space:nowrap}
+.tabs button.on{color:var(--ink);border-color:var(--blue)}
+.info{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 22px}
+.info span{display:block;font-size:11.5px;color:var(--mut);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.info b{font-weight:600;word-break:break-word}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.stat{border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.stat span{font-size:12px;color:var(--mut);font-weight:650}
+.stat b{display:block;font-size:22px;margin-top:2px}
+.tog{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-weight:600;font-size:13px}
+.tog input{width:36px;height:20px;appearance:none;background:#cbd5e1;border-radius:20px;position:relative;cursor:pointer;transition:.15s;margin:0;flex:none}
+.tog input::after{content:"";position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:2px;left:2px;transition:.15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.tog input:checked{background:var(--acc)}
+.tog input:checked::after{left:18px}
+.tog input:disabled{opacity:.5}
+.inline-in{padding:6px 9px;border:1px solid #cbd5e1;border-radius:8px;width:100%;min-width:130px}
+.sel{padding:6px 8px;border:1px solid #cbd5e1;border-radius:8px;background:#fff}
+.log{display:grid}
+.log div{display:grid;grid-template-columns:120px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid #eef2f6}
+.log div:last-child{border-bottom:0}
+.log time{color:var(--mut);font-size:12.5px;font-variant-numeric:tabular-nums}
+.log b{font-weight:650}
+.log small{color:var(--mut)}
+.alert{display:block;padding:12px 14px;line-height:1.5;border-radius:11px;font-size:13.5px}
+.alert.warn{background:var(--amb2);color:#6b4100}
+.alert.info{background:var(--blue2);color:#155e75}
+.alert.err{background:var(--red2);color:#8f2512}
+code,.code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px}
+.code{display:block;background:#0f172a;color:#d4f1f8;border-radius:10px;padding:12px 14px;white-space:pre-wrap;word-break:break-all;margin:8px 0}
+.steps{counter-reset:s;display:grid;gap:14px;padding:0;margin:0;list-style:none}
+.steps li{counter-increment:s;display:grid;grid-template-columns:30px 1fr;gap:12px}
+.steps li::before{content:counter(s);width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px}
+.steps b{display:block;margin-bottom:2px}
+
+/* onglets */
+.modal.md{width:min(580px,100%)}
+.tsum{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.tsum b{font-size:15px}
+.tg{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px}
+.tg-h{display:flex;align-items:center;gap:8px;font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);margin-bottom:8px}
+.tg-h small{color:var(--mut);font-weight:600;letter-spacing:0;text-transform:none}
+.tg-h button{all:unset;cursor:pointer;margin-inline-start:auto;font-size:12px;font-weight:600;color:var(--mut);text-transform:none;letter-spacing:0}
+.tg-h button:hover{color:var(--red)}
+.tg-c{display:flex;flex-wrap:wrap;gap:6px}
+.tchip{display:inline-flex;align-items:center;gap:3px;padding:4px 4px 4px 10px;border-radius:999px;background:var(--blue2);color:#155e75;font-size:13px;font-weight:600}
+.tchip.lock{padding-right:10px;background:#f1f5f9;color:var(--ink2)}
+.tchip button{all:unset;cursor:pointer;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:16px;line-height:1;color:#155e75}
+.tchip button:hover{background:#fbd5cc;color:var(--red)}
+.tadd{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;border:1px dashed #cbd5e1;color:var(--ink2);font-size:13px;font-weight:600;background:#fff}
+.tadd:hover{border-color:var(--blue);color:var(--blue);background:var(--blue2)}
+.tg-empty{font-size:12.5px;color:var(--mut)}
+.addp{border:1px dashed #cbd5e1;border-radius:12px;padding:12px;margin-top:6px;background:#f8fafc}
+.addp .tg{background:#fff}
+.mf .lnk{all:unset;cursor:pointer;margin-inline-end:auto;font-size:13px;font-weight:600;color:var(--blue);text-decoration:underline;text-underline-offset:2px;align-self:center}
+.tbtn{display:inline-flex;align-items:center;gap:6px}
+.tbtn i{font-style:normal;font-size:11px;font-weight:700;background:var(--blue2);color:#155e75;border-radius:999px;padding:1px 7px}
+
+/* modal + toast */
+.ov{position:fixed;inset:0;background:rgba(15,23,42,.5);display:flex;align-items:flex-start;justify-content:center;padding:5vh 16px;z-index:50;overflow-y:auto}
+.modal{background:#fff;border-radius:16px;width:min(760px,100%);box-shadow:0 30px 70px -20px rgba(0,0,0,.45)}
+.modal.sm{width:min(460px,100%)}
+.mh{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line)}
+.mh h3{margin:0;font-size:18px}
+.mh button{all:unset;cursor:pointer;font-size:22px;color:var(--mut);line-height:1;padding:4px}
+.mb{padding:18px 22px}
+.mf{display:flex;justify-content:flex-end;gap:10px;padding:14px 22px;border-top:1px solid var(--line);background:#f8fafc;border-radius:0 0 16px 16px}
+.urow{display:grid;grid-template-columns:1.1fr 1.4fr 1fr 34px;gap:8px;margin-bottom:8px}
+.urow button{all:unset;cursor:pointer;color:var(--mut);text-align:center;font-size:18px}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 16px;border-radius:11px;font-weight:600;z-index:80;box-shadow:0 10px 30px -10px rgba(0,0,0,.5);max-width:92vw}
+.toast.err{background:var(--red)}
+
+/* auth screens — même page d'accueil que l'application Tadbir */
+.gate{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:18px;background:#1e293b;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#18283b}
+.gbox{background:#fff;border-radius:16px;width:min(420px,100%);padding:32px 30px;box-shadow:0 28px 64px -20px rgba(0,0,0,.55)}
+.gbrand{display:flex;align-items:center;justify-content:center;gap:9px;margin:-4px 0 18px}
+.gbrand svg{width:42px;height:42px;display:block;flex:none}
+.gbrand .tb-w{display:block;font-family:Sora,Inter,sans-serif;font-size:21px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#0f172a;line-height:1.05}
+.gbrand .tb-w::after{content:".";color:#06b6d4}
+.gbrand small{display:flex;justify-content:space-between;gap:3px;margin-top:5px;font-size:9.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#64748b;line-height:1}
+.gbox h2{margin:4px 0;font-size:24px;font-weight:700;letter-spacing:-.01em;color:#0f172a}
+.gbox p{margin:0 0 22px;color:#64748b;line-height:1.5}
+.gbox form{display:grid;gap:16px}
+.gbox .field{gap:7px}
+.gbox .field label{font-size:12px;font-weight:700;color:#334155}
+.gbox .field input{padding:12px;border:1px solid #cbd5e1;border-radius:10px;font-size:15px}
+.gbox .field input:focus{outline:2px solid #a5f3fc;border-color:#0891b2}
+.gbox .btn{justify-content:center;width:100%;padding:13px;border-radius:10px;font-size:15px;font-weight:700;background:#0891b2;border:0}
+.gbox .btn:hover{background:#0e7490;filter:none}
+.gbox .btn.sec{background:#fff;color:#0f172a;border:1px solid #cbd5e1}
+.gbox .btn.sec:hover{background:#f8fafc}
+.gbox a{color:#0891b2}
+.gbox .code{background:#0f172a}
+.pw{position:relative;display:block}
+.pw input{padding-right:46px!important}
+.pw .eye{all:unset;position:absolute;right:6px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:8px;display:grid;place-items:center;color:#8a94a6;cursor:pointer}
+.pw .eye:hover{color:#0891b2;background:#ecfeff}
+.gsec{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:-4px;font-size:12px;color:#64748b}
+.gsec svg{color:#0891b2;flex:none}
+.glinks{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font-size:13px}
+.glinks a{font-weight:600;text-decoration:underline;text-underline-offset:2px}
+.glinks+.glinks{margin-top:10px;padding-top:12px;border-top:1px solid #e2e8f0}
+.glinks+.glinks a{font-weight:500;color:#64748b}
+.gfoot{font-size:12px;color:rgba(255,255,255,.62);text-align:center}
+.msg{min-height:18px;font-size:13px;color:var(--grn)}
+.gbox .msg:empty{display:none}
+.msg.err{color:var(--red)}
+.or{display:flex;align-items:center;gap:10px;color:#667085;font-size:12px;margin:14px 0}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+
+@media (max-width:1440px){.hide-l{display:none}}
+@media (max-width:1100px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.two{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:820px){
+  .shell{grid-template-columns:1fr}
+  .side{position:sticky;top:0;height:auto;flex-direction:row;align-items:center;padding:10px 12px;z-index:20;gap:8px;padding-top:max(10px,env(safe-area-inset-top))}
+  .brand{padding:0}.brand div:last-child{display:none}
+  .nav{display:flex;overflow-x:auto;gap:2px}
+  .nav button{padding:8px 10px;font-size:13px;white-space:nowrap}.nav button svg{display:none}
+  .sidefoot{display:none}
+  .main{padding:18px 14px 50px}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .facts div:nth-child(2){border-inline-end:0}
+  .facts div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .info{grid-template-columns:1fr 1fr}
+  .fg{grid-template-columns:1fr}
+  .urow{grid-template-columns:1fr 1fr;}
+  .urow select{grid-column:1}
+  .hide-m{display:none}
+  .log div{grid-template-columns:1fr;gap:2px}
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* =====================================================================
+   Utilitaires
+   ===================================================================== */
+const $=s=>document.querySelector(s);
+const E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ROLES=['Administrateur','Responsable','Employé'];
+const PLANS={Essai:{months:0,days:14,label:'Essai (14 jours)'},Mensuel:{months:1,days:0,label:'Mensuel'},Annuel:{months:12,days:0,label:'Annuel'}};
+/* Onglets de l'application Tadbir (identifiants = data-page) */
+const TAB_GROUPS=[
+  ['Général',[['dashboard','Tableau de bord']]],
+  ['Ventes',[['expedition','Fiches d’expédition'],['invoice','Nouvelle facture'],['register','Registre factures'],['proforma','Factures proforma'],['devis','Offres (devis)'],['facrecur','Factures récurrentes'],['contrats','Contrats'],['bl','Bons de livraison (BL)']]],
+  ['Clients',[['clients','Clients'],['situation','Situation clients'],['relances','Relances clients'],['avoirs','Avoirs clients'],['avpay','Paiements des avoirs']]],
+  ['Stock et achats',[['stock','Gestion du stock'],['damaged','Marchandise endommagée'],['achat','Achats & fournisseurs'],['reappro','Réapprovisionnement'],['bcmd','Bons de commande'],['depenses','Toutes les dépenses'],['deprecur','Dépenses récurrentes']]],
+  ['Finance',[['caisses','Gestion des caisses'],['payonline','Paiement en ligne'],['finance','Finance'],['encaissements','Encaissements'],['caisse','Caisse'],['pilotage','Pilotage'],['rapports','Rapports'],['calendrier','Calendrier']]],
+  ['Ressources humaines',[['monespace','Mon espace'],['rh','RH'],['rhdemandes','Demandes RH'],['rhmsg','Messagerie RH'],['depts','Départements'],['charges','Charges']]],
+  ['Administration',[['journal','Journal & contrôle'],['sauvegardes','Sauvegardes'],['emails','Emails'],['utilisateurs','Utilisateurs'],['parametres','Paramètres'],['maintenance','Diagnostic'],['profil','Profil'],['corbeille','Corbeille']]]
+];
+const ALL_TABS=TAB_GROUPS.reduce((a,g)=>a.concat(g[1].map(t=>t[0])),[]);
+const TAB_LABEL={};TAB_GROUPS.forEach(g=>g[1].forEach(t=>TAB_LABEL[t[0]]=t[1]));
+const LOCKED_TABS=['dashboard'];
+const COLL={invoices:'Factures',bls:'Bons de livraison',clients:'Clients',products:'Produits',purchases:'Achats',suppliers:'Fournisseurs',employees:'Employés',cashMoves:'Mouvements caisse'};
+const ICON={
+  dash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>',
+  co:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 9h1M14 9h1M9 13h1M14 13h1M10 21v-4h4v4"/></svg>',
+  user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>',
+  log:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>',
+  cog:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  tabs:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 4v5M15 4v5"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>'
+};
+function pad(n){return String(n).padStart(2,'0')}
+function todayStr(){const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+function parseD(s){if(!s)return null;const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(s);return m?Date.UTC(+m[1],+m[2]-1,+m[3]):null}
+function daysBetween(a,b){return Math.round((parseD(b)-parseD(a))/864e5)}
+function addPeriod(s,months,days){
+  const t=parseD(s)||parseD(todayStr());const d=new Date(t);
+  let y=d.getUTCFullYear(),m=d.getUTCMonth()+(months||0),dd=d.getUTCDate();
+  y+=Math.floor(m/12);m=((m%12)+12)%12;
+  const dim=new Date(Date.UTC(y,m+1,0)).getUTCDate();
+  const r=new Date(Date.UTC(y,m,Math.min(dd,dim))+(days||0)*864e5);
+  return r.getUTCFullYear()+'-'+pad(r.getUTCMonth()+1)+'-'+pad(r.getUTCDate());
+}
+function fd(s){if(!s)return '—';const t=parseD(s);if(t==null)return '—';const d=new Date(t);return pad(d.getUTCDate())+'/'+pad(d.getUTCMonth()+1)+'/'+d.getUTCFullYear()}
+function fdt(s){if(!s)return '—';const d=new Date(s);if(isNaN(d))return '—';return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear()+' '+pad(d.getHours())+':'+pad(d.getMinutes())}
+function ago(s){if(!s)return 'Jamais';const d=(Date.now()-new Date(s).getTime())/1000;if(d<90)return 'À l’instant';if(d<3600)return 'Il y a '+Math.round(d/60)+' min';if(d<86400)return 'Il y a '+Math.round(d/3600)+' h';const j=Math.round(d/86400);return j<=1?'Hier':'Il y a '+j+' j'}
+function money(n){return (Number(n)||0).toLocaleString('fr-MA',{minimumFractionDigits:0,maximumFractionDigits:2})}
+function uid(){return crypto.randomUUID?crypto.randomUUID():'d'+Date.now().toString(36)+Math.random().toString(36).slice(2)}
+function emailOk(e){return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(e||'').trim())}
+
+/* état d'une société */
+function cState(c){
+  if(c.status==='suspended')return {k:'sus',t:'Suspendue'};
+  if(c.expires_at){const d=daysBetween(todayStr(),c.expires_at);
+    if(d<0)return {k:'exp',t:'Expirée',d};
+    if(d<=15)return {k:'soon',t:d===0?'Expire aujourd’hui':'Expire dans '+d+' j',d};
+    return {k:'ok',t:'Active',d};}
+  return {k:'ok',t:'Active',d:null};
+}
+function badge(c){const s=cState(c);return '<span class="badge b-'+s.k+'">'+E(s.t)+'</span>'}
+function monthly(c){const p=Number(c.price_mad)||0;return c.plan==='Annuel'?p/12:c.plan==='Mensuel'?p:0}
+
+/* =====================================================================
+   Accès aux données — Supabase ou démonstration
+   ===================================================================== */
+function cfg(){
+  const w=window.TADBIR_CONFIG||{};if(w.url&&w.anonKey)return {url:w.url,anonKey:w.anonKey,fixed:true};
+  try{const s=JSON.parse(localStorage.getItem('tadbir_console_cfg')||'null');if(s&&s.url&&s.anonKey)return s}catch(e){}
+  return null;
+}
+
+function SupabaseAPI(c){
+  let sb=null;
+  async function client(){
+    if(sb)return sb;
+    if(!window.supabase){await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';s.onload=res;s.onerror=()=>rej(new Error('Impossible de charger le module Supabase. Vérifiez la connexion internet.'));document.head.appendChild(s)})}
+    sb=window.supabase.createClient(c.url,c.anonKey,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'tadbir_console_auth'}});
+    return sb;
+  }
+  async function rpc(n,a){const s=await client();const r=await s.rpc(n,a||{});if(r.error)throw new Error(r.error.message);return r.data}
+  return {
+    demo:false,
+    async session(){const s=await client();const r=await s.auth.getSession();return r.data&&r.data.session?r.data.session.user:null},
+    async login(email,pw){const s=await client();const r=await s.auth.signInWithPassword({email,password:pw});if(r.error)throw new Error(/invalid/i.test(r.error.message)?'E-mail ou mot de passe incorrect.':/confirm/i.test(r.error.message)?'Confirmez d’abord votre e-mail (lien reçu).':r.error.message);return r.data.user},
+    async signup(email,pw,name){const s=await client();const r=await s.auth.signUp({email,password:pw,options:{data:{full_name:name}}});if(r.error)throw new Error(r.error.message);return !!(r.data&&r.data.session)},
+    async forgot(email){const s=await client();const r=await s.auth.resetPasswordForEmail(email,{redirectTo:location.href.split('#')[0]});if(r.error)throw new Error(r.error.message)},
+    async logout(){const s=await client();await s.auth.signOut()},
+    whoami:()=>rpc('admin_whoami'),
+    overview:()=>rpc('admin_overview'),
+    detail:id=>rpc('admin_company_detail',{p_id:id}),
+    saveCompany:p=>rpc('admin_save_company',{p}),
+    setStatus:(id,s)=>rpc('admin_set_status',{p_id:id,p_status:s}),
+    extend:(id,m,d)=>rpc('admin_extend',{p_id:id,p_months:m,p_days:d||0}),
+    invite:(cid,email,name,role)=>rpc('tb_invite',{p_company:cid,p_email:email,p_name:name,p_role:role}),
+    cancelInvite:id=>rpc('tb_cancel_invite',{p_id:id}),
+    setMember:(u,cid,role,active,name)=>rpc('admin_set_member',{p_user:u,p_company:cid,p_role:role,p_active:active,p_name:name}),
+    deleteCompany:(id,conf)=>rpc('admin_delete_company',{p_id:id,p_confirm:conf}),
+    getTabs:cid=>rpc('admin_get_tabs',{p_company:cid}),
+    setTabs:(kind,id,tabs)=>rpc('admin_set_tabs',{p_kind:kind,p_id:id,p_tabs:tabs})
+  };
+}
+
+/* ---------- démonstration (données sur cet appareil uniquement) ---------- */
+function DemoAPI(){
+  const K='tadbir_console_demo';
+  function seed(){
+    const t=todayStr(),now=new Date().toISOString();
+    const c1={id:uid(),name:'BSM ELEVATOR',legal_form:'SARL',city:'Tanger',ice:'003868143000039',phone:'08 08 56 10 17',email:'info@bsmelevator.com',contact:'Direction',plan:'Annuel',price_mad:12000,max_users:50,status:'active',starts_at:addPeriod(t,-3),expires_at:addPeriod(t,9),notes:'',created_at:now};
+    const c2={id:uid(),name:'Atlas Lift SARL',legal_form:'SARL',city:'Casablanca',phone:'05 22 00 00 00',email:'contact@atlaslift.ma',contact:'M. Alaoui',plan:'Essai',price_mad:0,max_users:3,status:'active',starts_at:addPeriod(t,0,-9),expires_at:addPeriod(t,0,5),notes:'Démo faite le '+fd(addPeriod(t,0,-9)),created_at:now};
+    const c3={id:uid(),name:'Rif Ascenseurs',legal_form:'SARL AU',city:'Tétouan',plan:'Mensuel',price_mad:900,max_users:5,status:'suspended',starts_at:addPeriod(t,-2),expires_at:addPeriod(t,0,12),notes:'Retard de paiement',created_at:now};
+    const m=(c,n,e,r,a,seen)=>({user_id:uid(),company_id:c?c.id:null,full_name:n,email:e,role:r,active:a,created_at:now,last_seen_at:seen});
+    const h=x=>new Date(Date.now()-x*3600e3).toISOString();
+    return {companies:[c1,c2,c3],
+      members:[m(c1,'Directeur BSM','direction@bsmelevator.com','Administrateur',true,h(1)),m(c1,'Commercial 1','commercial@bsmelevator.com','Employé',true,h(5)),m(c1,'Magasin','magasin@bsmelevator.com','Responsable',true,h(28)),
+        m(c2,'Karim Alaoui','karim@atlaslift.ma','Administrateur',true,h(50)),m(c3,'Youssef R.','youssef@rif-asc.ma','Administrateur',true,h(400)),
+        m(null,'Nouveau compte','inconnu@gmail.com','Employé',false,null)],
+      invitations:[{id:uid(),company_id:c2.id,email:'stock@atlaslift.ma',full_name:'Magasinier Atlas',role:'Employé',created_at:now}],
+      stats:{[c1.id]:{invoices:412,bls:274,clients:88,products:640,purchases:57},[c2.id]:{invoices:6,clients:4,products:31},[c3.id]:{invoices:120,bls:96,clients:40,products:210}},
+      activity:{[c1.id]:h(1),[c2.id]:h(50),[c3.id]:h(400)},
+      log:[{id:1,at:now,actor_email:'vous (démo)',company_id:c2.id,company_name:c2.name,action:'Société créée',detail:{formule:'Essai'}}]};
+  }
+  let db;try{db=JSON.parse(localStorage.getItem(K)||'null')}catch(e){}
+  if(!db)db=seed();
+  const save=()=>{try{localStorage.setItem(K,JSON.stringify(db))}catch(e){}};save();
+  const co=id=>db.companies.find(c=>c.id===id);
+  const act=cid=>db.members.filter(m=>m.company_id===cid&&m.active).length;
+  const log=(cid,action,detail)=>{db.log.unshift({id:Date.now(),at:new Date().toISOString(),actor_email:'vous (démo)',company_id:cid,company_name:(co(cid)||{}).name||detail&&detail.nom,action,detail:detail||null});db.log=db.log.slice(0,200)};
+  const ok=v=>new Promise(r=>setTimeout(()=>{save();r(v)},120));
+  const fail=m=>Promise.reject(new Error(m));
+  return {
+    demo:true,
+    async session(){return {email:'demo@tadbir'}},
+    async logout(){},
+    whoami:()=>ok({is_admin:true,email:'Mode démonstration'}),
+    overview(){return ok({today:todayStr(),
+      companies:db.companies.map(c=>Object.assign({},c,{active_users:act(c.id),total_users:db.members.filter(m=>m.company_id===c.id).length,invites:db.invitations.filter(i=>i.company_id===c.id).length,last_activity:db.activity[c.id]||null,last_login:db.members.filter(m=>m.company_id===c.id).map(m=>m.last_seen_at).filter(Boolean).sort().pop()||null})).sort((a,b)=>a.name.localeCompare(b.name)),
+      unassigned:db.members.filter(m=>!m.company_id),log:db.log.slice(0,60)})},
+    detail(id){const c=co(id);if(!c)return fail('Société introuvable.');return ok({company:Object.assign({},c),members:db.members.filter(m=>m.company_id===id),invitations:db.invitations.filter(i=>i.company_id===id),stats:db.stats[id]||{},last_activity:db.activity[id]||null,log:db.log.filter(l=>l.company_id===id).slice(0,40)})},
+    saveCompany(p){
+      if(!String(p.name||'').trim())return fail('La raison sociale est obligatoire.');
+      const mx=parseInt(p.max_users,10)||3;if(mx<1)return fail('Le nombre maximum d’utilisateurs doit être au moins 1.');
+      if(p.id){const c=co(p.id);if(!c)return fail('Société introuvable.');if(mx<act(c.id))return fail('Cette société a déjà '+act(c.id)+' utilisateurs actifs : désactivez-en avant de baisser la limite.');
+        Object.assign(c,p,{max_users:mx,price_mad:Number(p.price_mad)||0,expires_at:p.expires_at||null});log(c.id,'Société modifiée',{formule:p.plan,max:mx,expire:p.expires_at});return ok(c.id)}
+      const c=Object.assign({status:'active',created_at:new Date().toISOString()},p,{id:uid(),max_users:mx,price_mad:Number(p.price_mad)||0,expires_at:p.expires_at||null});
+      db.companies.push(c);log(c.id,'Société créée',{formule:p.plan,max:mx,expire:p.expires_at});return ok(c.id)},
+    setStatus(id,s){const c=co(id);c.status=s;log(id,s==='active'?'Accès réactivé':'Accès suspendu');return ok()},
+    extend(id,m,d){const c=co(id);const base=(c.expires_at&&c.expires_at>todayStr())?c.expires_at:todayStr();c.expires_at=addPeriod(base,m,d);log(id,'Abonnement prolongé',{mois:m,jours:d||0,nouvelle_fin:c.expires_at});return ok(c.expires_at)},
+    invite(cid,email,name,role){
+      const em=String(email||'').trim().toLowerCase();if(!emailOk(em))return fail('Adresse e-mail invalide : '+email);
+      const c=co(cid);const m=db.members.find(x=>String(x.email).toLowerCase()===em);
+      if(m){if(m.company_id&&m.company_id!==cid)return fail('Cet e-mail utilise déjà une autre société.');if(m.company_id===cid&&m.active)return ok('deja_actif');
+        m.company_id=cid;m.role=role;if(name)m.full_name=name;m.active=act(cid)<c.max_users;log(cid,'Compte existant rattaché',{email:em,role});return ok(m.active?'rattache':'rattache_inactif')}
+      const i=db.invitations.find(x=>x.email===em);
+      if(i&&i.company_id!==cid)return fail('Cet e-mail est déjà invité dans une autre société.');
+      if(i){i.full_name=name;i.role=role}else db.invitations.push({id:uid(),company_id:cid,email:em,full_name:name||null,role,created_at:new Date().toISOString()});
+      log(cid,'Invitation',{email:em,role});return ok('invite')},
+    cancelInvite(id){const i=db.invitations.find(x=>x.id===id);db.invitations=db.invitations.filter(x=>x.id!==id);if(i)log(i.company_id,'Invitation annulée',{email:i.email});return ok()},
+    simulateSignup(id){const i=db.invitations.find(x=>x.id===id);if(!i)return ok();const c=co(i.company_id);
+      db.members.push({user_id:uid(),company_id:i.company_id,email:i.email,full_name:i.full_name||i.email,role:i.role,active:act(i.company_id)<c.max_users,created_at:new Date().toISOString(),last_seen_at:new Date().toISOString()});
+      db.invitations=db.invitations.filter(x=>x.id!==id);return ok()},
+    setMember(u,cid,role,active,name){const m=db.members.find(x=>x.user_id===u);if(!m)return fail('Utilisateur introuvable.');
+      if(cid&&active&&(!m.active||m.company_id!==cid)){const c=co(cid);if(act(cid)>=c.max_users)return fail('Limite atteinte : '+c.max_users+' utilisateur(s) actif(s) maximum pour cette société.')}
+      const old=m.company_id;m.company_id=cid;m.role=role;m.active=cid?active:false;if(name)m.full_name=name;
+      log(cid||old,cid?'Utilisateur modifié':'Utilisateur retiré de la société',{email:m.email,role,actif:active});return ok()},
+    deleteCompany(id,conf){const c=co(id);if(!c)return fail('Société introuvable.');if(String(conf||'').trim()!==c.name)return fail('Confirmation incorrecte : tapez exactement « '+c.name+' ».');
+      log(id,'Société supprimée',{nom:c.name});db.members.forEach(m=>{if(m.company_id===id){m.company_id=null;m.active=false}});db.invitations=db.invitations.filter(i=>i.company_id!==id);db.companies=db.companies.filter(x=>x.id!==id);return ok()},
+    getTabs(cid){db.tabs=db.tabs||{co:{},mem:{}};const mem={};db.members.filter(m=>m.company_id===cid).forEach(m=>{if(db.tabs.mem[m.user_id])mem[m.user_id]=db.tabs.mem[m.user_id]});return ok({company:db.tabs.co[cid]||null,members:mem})},
+    setTabs(kind,id,tabs){db.tabs=db.tabs||{co:{},mem:{}};const box=kind==='company'?db.tabs.co:db.tabs.mem;if(tabs)box[id]=tabs;else delete box[id];
+      const m=kind==='member'?db.members.find(x=>x.user_id===id):null;log(kind==='company'?id:(m&&m.company_id),'Onglets modifiés',{email:m&&m.email,onglets:tabs?tabs.length+' / '+ALL_TABS.length:'tous'});return ok()},
+    reset(){localStorage.removeItem(K);db=seed();save()}
+  };
+}
+
+/* =====================================================================
+   État de l'interface
+   ===================================================================== */
+let API=null,ME=null,OV=null,DET=null;
+const UI={page:'dash',filter:'all',q:'',coId:null,tab:'users'};
+
+function toast(m,err){document.querySelectorAll('.toast').forEach(x=>x.remove());const t=document.createElement('div');t.className='toast'+(err?' err':'');t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),err?5200:2600)}
+async function run(btn,fn,okMsg){
+  if(btn)btn.disabled=true;
+  try{const r=await fn();if(okMsg)toast(okMsg);return r}
+  catch(e){toast(e.message||String(e),true);throw e}
+  finally{if(btn&&btn.isConnected)btn.disabled=false}
+}
+
+/* ---------- écrans d'accès ---------- */
+const LOGO_SVG='<svg viewBox="0 0 40 40" aria-hidden="true"><path class="hx" d="M20 1.5l16 9.25v18.5L20 38.5 4 29.25v-18.5z" fill="#0e3a4a"/><path d="M12.5 14h15M20 14v13" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/><circle cx="27" cy="25.5" r="2" fill="#22d3ee"/></svg>';
+const BRAND='<div class="brand"><div class="logo" title="Tadbir">'+LOGO_SVG+'</div><div><b>Tadbir — Gestion</b><small>Console admin</small></div></div>';
+const GBRAND='<div class="gbrand">'+LOGO_SVG+'<div><span class="tb-w">Tadbir</span><small aria-label="Console admin">'+'CONSOLE'.split('').map(x=>'<span aria-hidden="true">'+x+'</span>').join('')+'</small></div></div>';
+const LOCK='<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+const EYE='<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+function gate(html){
+  $('#root').innerHTML='<div class="gate"><div class="gbox">'+GBRAND+html+'</div><div class="gfoot">© '+new Date().getFullYear()+' Tadbir — Gestion · Console d’administration</div></div>';
+  $('#root').querySelectorAll('.gbox input[type=password]').forEach(i=>{
+    const w=document.createElement('span');w.className='pw';i.parentNode.insertBefore(w,i);w.appendChild(i);
+    const b=document.createElement('button');b.type='button';b.className='eye';b.setAttribute('aria-label','Afficher le mot de passe');b.innerHTML=EYE;
+    b.onclick=()=>{const s=i.type==='password';i.type=s?'text':'password';b.setAttribute('aria-pressed',s)};w.appendChild(b)});
+}
+
+function setupView(){
+  gate('<h2>Connexion à la base</h2><p>Collez l’adresse et la clé publique (anon) de votre projet Supabase — les mêmes que dans l’application.</p>'
+   +'<form id="fCfg"><div class="field"><label>Project URL</label><input id="cU" placeholder="https://xxxx.supabase.co" required></div>'
+   +'<div class="field"><label>Clé anon (public)</label><input id="cK" placeholder="eyJhbGciOi…" required></div>'
+   +'<div class="msg" id="cM"></div><button class="btn" type="submit">Enregistrer</button></form>'
+   +'<div class="or">ou</div><button class="btn sec" id="bDemo" style="width:100%;justify-content:center">Essayer en mode démonstration</button>'
+   +'<p style="margin:12px 0 0;font-size:12.5px">Le mode démonstration enregistre des données fictives sur cet appareil seulement, pour découvrir la console avant d’installer Supabase.</p>');
+  $('#fCfg').onsubmit=e=>{e.preventDefault();const u=$('#cU').value.trim().replace(/\/+$/,''),k=$('#cK').value.trim();
+    if(!/^https:\/\/.+/.test(u)){$('#cM').className='msg err';$('#cM').textContent='L’adresse doit commencer par https://';return}
+    localStorage.setItem('tadbir_console_cfg',JSON.stringify({url:u,anonKey:k}));start()};
+  $('#bDemo').onclick=()=>{localStorage.setItem('tadbir_console_mode','demo');start()};
+}
+function loginView(msg,err){
+  gate('<h2>Bienvenue</h2><p>Connectez-vous à la console d’administration.</p>'
+   +'<form id="fL"><div class="field"><label for="lE">E-mail</label><input id="lE" type="email" dir="ltr" autocomplete="username" placeholder="nom@societe.ma" required></div>'
+   +'<div class="field"><label for="lP">Mot de passe</label><input id="lP" type="password" dir="ltr" autocomplete="current-password" required></div>'
+   +'<div class="msg'+(err?' err':'')+'" id="lM">'+E(msg||'')+'</div><button class="btn" type="submit">Se connecter</button>'
+   +'<div class="gsec">'+LOCK+'<span>Connexion sécurisée · Données chiffrées</span></div></form>'
+   +'<div class="glinks"><a href="#" id="lF">Mot de passe oublié ?</a></div>'
+   +'<div class="glinks"><a href="#" id="lC">Changer de base Supabase</a><a href="#" id="lD">Mode démonstration</a></div>');
+  $('#fL').onsubmit=async e=>{e.preventDefault();const m=$('#lM'),b=e.submitter||$('#fL .btn');b.disabled=true;m.className='msg';m.textContent='Connexion…';
+    try{ME=await API.login($('#lE').value.trim(),$('#lP').value);await afterLogin()}catch(x){m.className='msg err';m.textContent=x.message}finally{b.disabled=false}};
+  $('#lF').onclick=async e=>{e.preventDefault();const em=$('#lE').value.trim(),m=$('#lM');if(!em){m.className='msg err';m.textContent='Saisissez d’abord votre e-mail.';return}
+    try{await API.forgot(em);m.className='msg';m.textContent='E-mail de réinitialisation envoyé.'}catch(x){m.className='msg err';m.textContent=x.message}};
+  $('#lC').onclick=e=>{e.preventDefault();if(cfg()&&cfg().fixed){toast('La base est fixée dans le fichier (TADBIR_CONFIG).',true);return}localStorage.removeItem('tadbir_console_cfg');setupView()};
+  $('#lD').onclick=e=>{e.preventDefault();localStorage.setItem('tadbir_console_mode','demo');start()};
+  setTimeout(()=>{const f=$('#lE');if(f)f.focus()},40);
+}
+function signupView(){
+  gate('<h2>Créer mon compte</h2><p>Créez votre compte, puis donnez-lui le rôle de super-administrateur (une seule fois, dans Supabase).</p>'
+   +'<form id="fS"><div class="field"><label>Nom complet</label><input id="sN" required></div>'
+   +'<div class="field"><label>E-mail</label><input id="sE" type="email" required></div>'
+   +'<div class="field"><label>Mot de passe (8 caractères minimum)</label><input id="sP" type="password" minlength="8" required></div>'
+   +'<div class="msg" id="sM"></div><button class="btn" type="submit">Créer le compte</button></form>'
+   +'<div class="glinks"><a href="#" id="sB">J’ai déjà un compte</a></div>');
+  $('#sB').onclick=e=>{e.preventDefault();loginView()};
+  $('#fS').onsubmit=async e=>{e.preventDefault();const m=$('#sM');
+    try{const logged=await API.signup($('#sE').value.trim(),$('#sP').value,$('#sN').value.trim());
+      if(logged){ME=await API.session();await afterLogin()}else loginView('Compte créé. Confirmez votre e-mail (lien reçu), puis connectez-vous.')}
+    catch(x){m.className='msg err';m.textContent=x.message}};
+}
+function notAdminView(email){
+  const sql="insert into public.platform_admins(user_id, email)\n  select id, email from auth.users where lower(email) = lower('"+String(email||'').replace(/'/g,"''")+"');";
+  gate('<h2>Compte non autorisé</h2><p>Le compte <b>'+E(email)+'</b> existe mais n’est pas super-administrateur. Pour la première installation, exécutez une seule fois dans Supabase › SQL Editor :</p>'
+   +'<span class="code" id="nSql">'+E(sql)+'</span><button class="btn sec" id="nCopy" style="width:100%;justify-content:center;margin-bottom:10px">Copier la commande</button>'
+   +'<button class="btn" id="nRe">J’ai exécuté la commande — vérifier</button><div class="glinks"><a href="#" id="nOut">Se déconnecter</a></div>');
+  $('#nCopy').onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(sql).then(()=>toast('Commande copiée.'))};
+  $('#nRe').onclick=afterLogin;
+  $('#nOut').onclick=async e=>{e.preventDefault();await API.logout();loginView()};
+}
+
+async function start(){
+  const demo=localStorage.getItem('tadbir_console_mode')==='demo';
+  if(demo){API=DemoAPI();ME={email:'demo'};return afterLogin()}
+  const c=cfg();if(!c){setupView();return}
+  API=SupabaseAPI(c);
+  gate('<h2>Connexion…</h2><p>Connexion au serveur.</p>');
+  try{ME=await API.session();if(ME)await afterLogin();else loginView()}
+  catch(e){gate('<h2>Connexion impossible</h2><p>'+E(e.message)+'</p><button class="btn" id="rt">Réessayer</button><div class="glinks"><a href="#" id="rc">Changer de base</a></div>');$('#rt').onclick=start;$('#rc').onclick=ev=>{ev.preventDefault();localStorage.removeItem('tadbir_console_cfg');setupView()}}
+}
+async function afterLogin(){
+  try{const w=await API.whoami();if(!w||!w.is_admin){notAdminView(w&&w.email||ME&&ME.email);return}ME.email=w.email}
+  catch(e){gate('<h2>Base non préparée</h2><p>'+E(e.message)+'</p><p>Exécutez d’abord le script <b>Tadbir_Supabase_MultiSocietes.sql</b> dans Supabase › SQL Editor.</p><button class="btn" id="rt">Réessayer</button>');$('#rt').onclick=afterLogin;return}
+  shell();await refresh();
+}
+
+/* ---------- coquille ---------- */
+function shell(){
+  $('#root').innerHTML='<div class="shell"><aside class="side">'+BRAND.replace('class="brand"','class="brand"')
+   +'<nav class="nav" id="nav">'
+   +'<button data-p="dash">'+ICON.dash+'<span>Tableau de bord</span></button>'
+   +'<button data-p="cos">'+ICON.co+'<span>Sociétés</span></button>'
+   +'<button data-p="pend">'+ICON.user+'<span>Comptes à rattacher</span><i class="cnt hide" id="cntP"></i></button>'
+   +'<button data-p="log">'+ICON.log+'<span>Journal</span></button>'
+   +'<button data-p="setup">'+ICON.cog+'<span>Installation</span></button></nav>'
+   +'<div class="sidefoot">Connecté<b>'+E(ME.email)+'</b>'+(API.demo?'<span class="demo-tag">MODE DÉMONSTRATION</span><br>':'')+'<button id="bOut">'+(API.demo?'Quitter la démo':'Se déconnecter')+'</button></div>'
+   +'</aside><main class="main" id="main"></main></div>';
+  $('#nav').onclick=e=>{const b=e.target.closest('button');if(!b)return;UI.page=b.dataset.p;UI.coId=null;render();window.scrollTo(0,0)};
+  $('#bOut').onclick=async()=>{if(API.demo){localStorage.removeItem('tadbir_console_mode');start();return}await API.logout();ME=null;loginView()};
+}
+async function refresh(){
+  try{OV=await API.overview()}catch(e){toast(e.message,true);return}
+  if(UI.coId){try{DET=await loadDet(UI.coId)}catch(e){UI.coId=null}}
+  render();
+}
+function render(){
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.p===UI.page));
+  const n=(OV&&OV.unassigned||[]).length,cp=$('#cntP');if(cp){cp.textContent=n;cp.classList.toggle('hide',!n)}
+  const m=$('#main');if(!m||!OV)return;
+  if(UI.coId&&DET)return renderDetail(m);
+  ({dash:renderDash,cos:renderCos,pend:renderPend,log:renderLog,setup:renderSetup}[UI.page]||renderDash)(m);
+}
+function head(t,sub,right){return '<div class="head"><div><h1>'+E(t)+'</h1>'+(sub?'<p>'+sub+'</p>':'')+'</div><div class="row">'+(right||'')+'</div></div>'}
+const newBtn='<button class="btn" data-act="new">'+ICON.plus+'Nouvelle société</button>';
+function bindNew(m){m.querySelectorAll('[data-act=new]').forEach(b=>b.onclick=()=>companyForm(null))}
+async function loadDet(id){const d=await API.detail(id);try{d.tabs=await API.getTabs(id)||{company:null,members:{}}}catch(e){d.tabs=null;d.tabsErr=e.message}return d}
+function openCo(id){UI.coId=id;UI.tab='users';DET=null;loadDet(id).then(d=>{DET=d;render();window.scrollTo(0,0)}).catch(e=>toast(e.message,true))}
+function bindRows(m){m.querySelectorAll('tr[data-co]').forEach(tr=>tr.onclick=()=>openCo(tr.dataset.co))}
+
+/* ---------- tableau de bord ---------- */
+function renderDash(m){
+  const cs=OV.companies;
+  const act=cs.filter(c=>{const s=cState(c).k;return s==='ok'||s==='soon'});
+  const seats=act.reduce((a,c)=>a+c.max_users,0),users=act.reduce((a,c)=>a+Number(c.active_users||0),0);
+  const soon=cs.filter(c=>{const s=cState(c);return c.status!=='suspended'&&s.d!=null&&s.d>=0&&s.d<=30});
+  const bad=cs.filter(c=>['exp','sus'].includes(cState(c).k));
+  const mrr=act.reduce((a,c)=>a+monthly(c),0);
+  const watch=cs.map(c=>({c,s:cState(c)})).filter(x=>x.s.k!=='ok'||(x.s.d!=null&&x.s.d<=30)).sort((a,b)=>(a.s.d==null?9e9:a.s.d)-(b.s.d==null?9e9:b.s.d));
+  m.innerHTML=head('Tableau de bord','Vue d’ensemble des sociétés clientes et de leurs accès.',newBtn)
+   +'<div class="kpis">'
+   +'<div class="card kpi"><span>Sociétés actives</span><b>'+act.length+'</b><small>sur '+cs.length+' au total</small></div>'
+   +'<div class="card kpi"><span>Utilisateurs actifs</span><b>'+users+'</b><small>'+seats+' places souscrites</small></div>'
+   +'<div class="card kpi"><span>Expirent sous 30 j</span><b style="color:'+(soon.length?'var(--amb)':'inherit')+'">'+soon.length+'</b><small>à renouveler</small></div>'
+   +'<div class="card kpi"><span>Bloquées</span><b style="color:'+(bad.length?'var(--red)':'inherit')+'">'+bad.length+'</b><small>expirées ou suspendues</small></div>'
+   +'<div class="card kpi"><span>Revenu mensuel</span><b>'+money(mrr)+'</b><small>MAD estimés (HT)</small></div></div>'
+   +'<div class="two"><div class="card"><div class="card-h"><h3>À surveiller</h3><small>expirations et blocages</small></div>'
+   +(watch.length?'<div class="tw"><table><thead><tr><th>Société</th><th>Formule</th><th>Fin</th><th>État</th></tr></thead><tbody>'
+     +watch.map(x=>'<tr class="click" data-co="'+E(x.c.id)+'"><td class="nm"><b>'+E(x.c.name)+'</b><small>'+E(x.c.city||'')+'</small></td><td><span class="pill">'+E(x.c.plan)+'</span></td><td class="num">'+fd(x.c.expires_at)+'</td><td>'+badge(x.c)+'</td></tr>').join('')+'</tbody></table></div>'
+     :'<div class="empty"><b>Rien à signaler</b>Aucune société n’expire dans les 30 prochains jours.</div>')
+   +'</div><div class="card"><div class="card-h"><h3>Dernières actions</h3><button class="btn sec sm" data-go="log">Tout voir</button></div><div class="card-b">'+logList(OV.log.slice(0,7))+'</div></div></div>';
+  bindNew(m);bindRows(m);m.querySelector('[data-go=log]').onclick=()=>{UI.page='log';render()};
+}
+
+/* ---------- sociétés ---------- */
+function renderCos(m){
+  const f=UI.filter,q=UI.q.trim().toLowerCase();
+  const all=OV.companies;
+  const pass=c=>{const k=cState(c).k;if(f==='ok'&&k!=='ok')return false;if(f==='soon'&&k!=='soon')return false;if(f==='exp'&&k!=='exp')return false;if(f==='sus'&&k!=='sus')return false;
+    if(q&&!(c.name+' '+(c.city||'')+' '+(c.ice||'')+' '+(c.email||'')).toLowerCase().includes(q))return false;return true};
+  const list=all.filter(pass);
+  const cnt=k=>all.filter(c=>cState(c).k===k).length;
+  const chip=(k,t)=>'<button class="chip'+(f===k?' on':'')+'" data-f="'+k+'">'+t+'</button>';
+  m.innerHTML=head('Sociétés',all.length+' société'+(all.length>1?'s':'')+' cliente'+(all.length>1?'s':''),newBtn)
+   +'<div class="card"><div class="toolbar"><div class="search">'+ICON.search+'<input id="q" placeholder="Rechercher par nom, ville, ICE, e-mail…" value="'+E(UI.q)+'"></div>'
+   +'<div class="chips">'+chip('all','Toutes ('+all.length+')')+chip('ok','Actives ('+cnt('ok')+')')+chip('soon','Expirent bientôt ('+cnt('soon')+')')+chip('exp','Expirées ('+cnt('exp')+')')+chip('sus','Suspendues ('+cnt('sus')+')')+'</div></div>'
+   +(list.length?'<div class="tw"><table><thead><tr><th>Société</th><th>Formule</th><th>Utilisateurs</th><th>Fin d’abonnement</th><th>État</th><th class="hide-m">Dernière activité</th></tr></thead><tbody>'
+     +list.map(c=>{const p=Math.min(100,Math.round(100*c.active_users/Math.max(1,c.max_users)));
+       return '<tr class="click" data-co="'+E(c.id)+'"><td class="nm"><b>'+E(c.name)+'</b><small>'+E([c.legal_form,c.city].filter(Boolean).join(' · '))+'</small></td>'
+        +'<td><span class="pill">'+E(c.plan)+'</span>'+(c.price_mad?'<div class="muted num" style="font-size:12px;margin-top:3px">'+money(c.price_mad)+' MAD</div>':'')+'</td>'
+        +'<td><div class="seats"><span class="num">'+c.active_users+' / '+c.max_users+'</span><div class="bar"><i class="'+(p>=100?'full':'')+'" style="width:'+p+'%"></i></div></div>'+(c.invites?'<small class="muted">'+c.invites+' invitation'+(c.invites>1?'s':'')+' en attente</small>':'')+'</td>'
+        +'<td class="num">'+fd(c.expires_at)+'</td><td>'+badge(c)+'</td><td class="hide-m muted">'+ago(c.last_activity||c.last_login)+'</td></tr>'}).join('')+'</tbody></table></div>'
+     :'<div class="empty"><b>'+(all.length?'Aucun résultat':'Aucune société')+'</b>'+(all.length?'Modifiez la recherche ou le filtre.':'Créez votre première société cliente.')+'</div>')+'</div>';
+  bindNew(m);bindRows(m);
+  m.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{UI.filter=b.dataset.f;render()});
+  const qi=$('#q');qi.oninput=()=>{UI.q=qi.value;const pos=qi.selectionStart;render();const n=$('#q');n.focus();n.setSelectionRange(pos,pos)};
+}
+
+/* ---------- fiche société ---------- */
+function renderDetail(m){
+  const c=DET.company,s=cState(c),mem=DET.members,inv=DET.invitations;
+  const actN=mem.filter(x=>x.active).length;
+  const tabs=[['users','Utilisateurs ('+mem.length+')'],['info','Informations'],['act','Activité'],['log','Journal']];
+  m.innerHTML='<div class="crumb"><button id="back">← Sociétés</button></div>'
+   +'<div class="card" style="margin-bottom:16px"><div class="dh"><div><h2>'+E(c.name)+'</h2><div class="row">'+badge(c)+'<span class="pill">'+E(c.plan)+'</span><span class="muted">'+E([c.legal_form,c.city].filter(Boolean).join(' · '))+'</span></div></div>'
+   +'<div class="row"><button class="btn sec sm" data-x="m1">+1 mois</button><button class="btn sec sm" data-x="y1">+1 an</button>'
+   +(c.status==='suspended'?'<button class="btn acc sm" data-x="on">Réactiver l’accès</button>':'<button class="btn danger sm" data-x="off">Suspendre</button>')
+   +'<button class="btn sec sm tbtn" data-x="tabs">'+ICON.tabs+'Onglets <i>'+tabCount(coTabs())+'</i></button>'
+   +'<button class="btn sm" data-x="edit">Modifier</button></div></div>'
+   +(s.k==='exp'?'<div style="padding:0 22px 16px"><div class="alert err">L’abonnement a expiré le '+fd(c.expires_at)+' : les utilisateurs de cette société ne peuvent plus se connecter. Prolongez l’abonnement pour rétablir l’accès.</div></div>':'')
+   +(s.k==='sus'?'<div style="padding:0 22px 16px"><div class="alert warn">Accès suspendu : les utilisateurs voient un écran « Accès suspendu ». Leurs données sont conservées.</div></div>':'')
+   +'<div class="facts"><div><span>Utilisateurs actifs</span><b class="num">'+actN+' / '+c.max_users+'</b></div><div><span>Début</span><b class="num">'+fd(c.starts_at)+'</b></div>'
+   +'<div><span>Fin d’abonnement</span><b class="num">'+fd(c.expires_at)+(s.d!=null&&s.d>=0?' <small class="muted" style="font-size:12px">('+s.d+' j)</small>':'')+'</b></div><div><span>Prix</span><b class="num">'+(c.price_mad?money(c.price_mad)+' MAD':'—')+'</b></div></div></div>'
+   +'<div class="card"><div class="tabs">'+tabs.map(t=>'<button data-t="'+t[0]+'" class="'+(UI.tab===t[0]?'on':'')+'">'+E(t[1])+'</button>').join('')+'</div><div id="tabb"></div></div>';
+  $('#back').onclick=()=>{UI.coId=null;DET=null;UI.page='cos';render()};
+  m.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{UI.tab=b.dataset.t;render()});
+  const re=async()=>{await refresh()};
+  m.querySelector('[data-x=m1]').onclick=e=>run(e.currentTarget,()=>API.extend(c.id,1,0),'Abonnement prolongé d’un mois.').then(re);
+  m.querySelector('[data-x=y1]').onclick=e=>run(e.currentTarget,()=>API.extend(c.id,12,0),'Abonnement prolongé d’un an.').then(re);
+  const on=m.querySelector('[data-x=on]'),off=m.querySelector('[data-x=off]');
+  if(on)on.onclick=e=>run(e.currentTarget,()=>API.setStatus(c.id,'active'),'Accès réactivé.').then(re);
+  if(off)off.onclick=()=>confirmBox('Suspendre '+c.name+' ?','Tous les utilisateurs de cette société seront bloqués immédiatement. Les données sont conservées et l’accès peut être réactivé à tout moment.','Suspendre',()=>API.setStatus(c.id,'suspended').then(()=>{toast('Accès suspendu.');return re()}));
+  m.querySelector('[data-x=edit]').onclick=()=>companyForm(c);
+  m.querySelector('[data-x=tabs]').onclick=()=>companyTabsBox(c);
+  const tb=$('#tabb');
+  if(UI.tab==='users')renderUsers(tb,c,mem,inv,actN);
+  else if(UI.tab==='info')renderInfo(tb,c);
+  else if(UI.tab==='act')renderAct(tb,c);
+  else tb.innerHTML='<div class="card-b">'+(DET.log.length?logList(DET.log):'<div class="empty">Aucune action enregistrée.</div>')+'</div>';
+}
+function roleSel(v,cls,dis){return '<select class="sel '+cls+'"'+(dis?' disabled':'')+'>'+ROLES.map(r=>'<option'+(r===v?' selected':'')+'>'+r+'</option>').join('')+'</select>'}
+function renderUsers(tb,c,mem,inv,actN){
+  const full=actN>=c.max_users;
+  tb.innerHTML='<div class="card-b">'
+   +(full?'<div class="alert warn" style="margin-bottom:14px">Toutes les places sont utilisées ('+actN+' / '+c.max_users+'). Pour activer un utilisateur de plus, augmentez le nombre maximum dans « Modifier ».</div>':'')
+   +'<form id="fInv" class="row" style="margin-bottom:16px;align-items:flex-end">'
+   +'<div class="field" style="flex:1.4;min-width:200px"><label>Inviter par e-mail</label><input id="iE" type="email" placeholder="employe@societe.ma" required></div>'
+   +'<div class="field" style="flex:1;min-width:150px"><label>Nom</label><input id="iN" placeholder="Nom complet"></div>'
+   +'<div class="field" style="min-width:150px"><label>Rôle</label>'+roleSel(mem.length||inv.length?'Employé':'Administrateur','',false).replace('class="sel "','id="iR" class="sel" style="padding:9px"')+'</div>'
+   +'<button class="btn" type="submit">Inviter</button></form>'
+   +'<div class="alert info" style="margin-bottom:16px">La personne invitée ouvre l’application, clique sur « Créer un compte employé » avec <b>cette adresse e-mail</b> : elle est rattachée automatiquement à '+E(c.name)+'.</div></div>'
+   +(mem.length?'<div class="tw"><table><thead><tr><th>Nom</th><th>E-mail</th><th>Rôle</th><th>Accès</th><th>Onglets</th><th class="hide-m hide-l">Dernière connexion</th><th></th></tr></thead><tbody>'
+     +mem.map(u=>'<tr data-u="'+E(u.user_id)+'"><td><input class="inline-in u-n" value="'+E(u.full_name)+'"></td><td>'+E(u.email)+'</td><td>'+roleSel(u.role,'u-r')+'</td>'
+       +'<td><label class="tog"><input type="checkbox" class="u-a"'+(u.active?' checked':'')+'><span>'+(u.active?'Actif':'Inactif')+'</span></label></td><td><button class="btn sec sm tbtn u-t" title="Choisir les onglets de cet utilisateur">'+ICON.tabs+'<i>'+memTabLabel(u.user_id)+'</i></button></td><td class="hide-m hide-l muted">'+ago(u.last_seen_at)+'</td>'
+       +'<td><div class="row" style="flex-wrap:nowrap"><button class="btn sec sm u-s">Enregistrer</button><button class="btn danger sm u-x" title="Retirer de la société">Retirer</button></div></td></tr>').join('')+'</tbody></table></div>'
+     :'<div class="empty"><b>Aucun utilisateur inscrit</b>Les invités apparaîtront ici dès qu’ils auront créé leur compte.</div>')
+   +(inv.length?'<div class="card-h" style="border-top:1px solid var(--line)"><h3>Invitations en attente</h3><small>'+inv.length+' — pas encore inscrites</small></div><div class="tw"><table><tbody>'
+     +inv.map(i=>'<tr data-i="'+E(i.id)+'"><td class="nm"><b>'+E(i.full_name||'—')+'</b><small>'+E(i.email)+'</small></td><td><span class="pill">'+E(i.role)+'</span></td><td class="muted hide-m">Invitée le '+fdt(i.created_at)+'</td><td style="text-align:end"><div class="row" style="justify-content:flex-end">'+(API.demo?'<button class="btn sec sm i-sim">Simuler l’inscription</button>':'')+'<button class="btn danger sm i-x">Annuler</button></div></td></tr>').join('')+'</tbody></table></div>':'');
+  const re=()=>refresh();
+  $('#fInv').onsubmit=e=>{e.preventDefault();const em=$('#iE').value.trim();if(!emailOk(em)){toast('Adresse e-mail invalide.',true);return}
+    run(e.submitter,()=>API.invite(c.id,em,$('#iN').value.trim(),$('#iR').value)).then(r=>{
+      toast({invite:'Invitation enregistrée.',rattache:'Compte existant rattaché et activé.',rattache_inactif:'Compte rattaché — inactif : plus de place disponible.',deja_actif:'Cette personne est déjà active dans la société.'}[r]||'Fait.');re()}).catch(()=>{})};
+  tb.querySelectorAll('tr[data-u]').forEach(tr=>{
+    const u=mem.find(x=>x.user_id===tr.dataset.u);
+    tr.querySelector('.u-t').onclick=()=>memberTabsBox(c,u);
+    tr.querySelector('.u-a').onchange=ev=>{ev.target.nextElementSibling.textContent=ev.target.checked?'Actif':'Inactif'};
+    tr.querySelector('.u-s').onclick=ev=>run(ev.currentTarget,()=>API.setMember(u.user_id,c.id,tr.querySelector('.u-r').value,tr.querySelector('.u-a').checked,tr.querySelector('.u-n').value.trim()),'Utilisateur enregistré.').then(re).catch(()=>{});
+    tr.querySelector('.u-x').onclick=()=>confirmBox('Retirer '+(u.full_name||u.email)+' ?','Son compte n’aura plus accès à '+c.name+'. Il apparaîtra dans « Comptes à rattacher ». Les données de la société ne sont pas touchées.','Retirer',()=>API.setMember(u.user_id,null,u.role,false,null).then(()=>{toast('Utilisateur retiré.');return re()}));
+  });
+  tb.querySelectorAll('tr[data-i]').forEach(tr=>{
+    tr.querySelector('.i-x').onclick=ev=>run(ev.currentTarget,()=>API.cancelInvite(tr.dataset.i),'Invitation annulée.').then(re).catch(()=>{});
+    const sim=tr.querySelector('.i-sim');if(sim)sim.onclick=ev=>run(ev.currentTarget,()=>API.simulateSignup(tr.dataset.i),'Inscription simulée.').then(re);
+  });
+}
+function renderInfo(tb,c){
+  const f=(l,v)=>'<div><span>'+l+'</span><b>'+E(v||'—')+'</b></div>';
+  tb.innerHTML='<div class="card-b"><div class="info">'+f('Raison sociale',c.name)+f('Forme juridique',c.legal_form)+f('Ville',c.city)+f('ICE',c.ice)+f('Identifiant fiscal (IF)',c.if_num)+f('Registre de commerce (RC)',c.rc)
+   +f('CNSS',c.cnss)+f('Téléphone',c.phone)+f('E-mail',c.email)+f('Personne à contacter',c.contact)+f('Adresse',c.address)+f('Créée le',fdt(c.created_at))+'</div>'
+   +(c.notes?'<div class="sect">Notes internes</div><div style="white-space:pre-wrap">'+E(c.notes)+'</div>':'')
+   +'<div class="sect" style="color:var(--red)">Zone sensible</div><div class="row"><span class="muted" style="flex:1;min-width:220px">Supprimer la société efface définitivement toutes ses données (factures, BL, stock, clients…). Préférez « Suspendre » en cas de doute.</span><button class="btn danger" id="bDel">Supprimer la société</button></div></div>';
+  $('#bDel').onclick=()=>deleteBox(c);
+}
+function renderAct(tb,c){
+  const st=DET.stats||{};const keys=Object.keys(COLL);
+  const lastLogin=DET.members.map(m=>m.last_seen_at).filter(Boolean).sort().pop();
+  tb.innerHTML='<div class="card-b"><div class="row" style="margin-bottom:14px;gap:22px"><div><span class="muted">Dernière saisie</span><br><b>'+ago(DET.last_activity)+'</b> <small class="muted">'+fdt(DET.last_activity)+'</small></div><div><span class="muted">Dernière connexion</span><br><b>'+ago(lastLogin)+'</b></div></div>'
+   +'<div class="stats">'+keys.map(k=>'<div class="stat"><span>'+COLL[k]+'</span><b class="num">'+(st[k]||0)+'</b></div>').join('')+'</div>'
+   +'<p class="muted" style="margin:14px 0 0;font-size:12.5px">Comptages seulement : la console ne montre jamais le contenu des documents des sociétés clientes.</p></div>';
+}
+
+/* ---------- comptes à rattacher ---------- */
+function renderPend(m){
+  const u=OV.unassigned,cs=OV.companies;
+  m.innerHTML=head('Comptes à rattacher','Personnes inscrites sans invitation : choisissez leur société et leur rôle.')
+   +'<div class="card">'+(u.length?'<div class="tw"><table><thead><tr><th>Personne</th><th>Inscrit le</th><th>Société</th><th>Rôle</th><th></th></tr></thead><tbody>'
+     +u.map(x=>'<tr data-u="'+E(x.user_id)+'"><td class="nm"><b>'+E(x.full_name||'—')+'</b><small>'+E(x.email)+'</small></td><td class="muted">'+fdt(x.created_at)+'</td>'
+       +'<td><select class="sel p-c"><option value="">— Choisir —</option>'+cs.map(c=>'<option value="'+E(c.id)+'">'+E(c.name)+' ('+c.active_users+'/'+c.max_users+')</option>').join('')+'</select></td>'
+       +'<td>'+roleSel(x.role,'p-r')+'</td><td><button class="btn sm p-s">Rattacher et activer</button></td></tr>').join('')+'</tbody></table></div>'
+     :'<div class="empty"><b>Aucun compte en attente</b>Les personnes qui créent un compte sans invitation apparaîtront ici.</div>')+'</div>';
+  m.querySelectorAll('tr[data-u]').forEach(tr=>{tr.querySelector('.p-s').onclick=ev=>{const cid=tr.querySelector('.p-c').value;if(!cid){toast('Choisissez une société.',true);return}
+    run(ev.currentTarget,()=>API.setMember(tr.dataset.u,cid,tr.querySelector('.p-r').value,true,null),'Compte rattaché et activé.').then(refresh).catch(()=>{})}});
+}
+
+/* ---------- journal ---------- */
+function logList(l){
+  if(!l.length)return '<div class="empty" style="padding:16px">Aucune action pour le moment.</div>';
+  const det=d=>{if(!d)return '';const p=[];if(d.email)p.push(d.email);if(d.role)p.push(d.role);if(d.formule)p.push(d.formule);if(d.max)p.push(d.max+' util. max');if(d.nouvelle_fin)p.push('fin : '+fd(d.nouvelle_fin));else if(d.expire)p.push('fin : '+fd(d.expire));if(d.actif!=null)p.push(d.actif?'actif':'inactif');if(d.onglets)p.push('onglets : '+d.onglets);return p.join(' · ')};
+  return '<div class="log">'+l.map(x=>'<div><time>'+fdt(x.at)+'</time><span><b>'+E(x.action)+'</b>'+(x.company_name?' — '+E(x.company_name):'')+'<br><small>'+E(det(x.detail))+(x.actor_email?' · par '+E(x.actor_email):'')+'</small></span></div>').join('')+'</div>';
+}
+function renderLog(m){m.innerHTML=head('Journal','Toutes les actions faites depuis la console et par les administrateurs des sociétés.')+'<div class="card"><div class="card-b">'+logList(OV.log)+'</div></div>'}
+
+/* ---------- installation ---------- */
+function renderSetup(m){
+  const c=cfg();
+  m.innerHTML=head('Installation','Mise en place de la plateforme, à faire une seule fois.')
+   +(API.demo?'<div class="alert warn" style="margin-bottom:16px"><span>Vous êtes en <b>mode démonstration</b> : rien n’est envoyé sur internet. <button class="btn sec sm" id="bReset" style="margin-inline-start:8px">Réinitialiser la démo</button></span></div>':'')
+   +'<div class="card"><div class="card-b"><ol class="steps">'
+   +'<li><div><b>Créer le projet Supabase</b>Sur supabase.com, créez un projet (région Europe — Frankfurt ou Paris).</div></li>'
+   +'<li><div><b>Préparer la base</b>Supabase › SQL Editor › New query : collez tout le fichier <code>Tadbir_Supabase_MultiSocietes.sql</code> puis « Run ».</div></li>'
+   +'<li><div><b>Activer les onglets par société et par utilisateur</b>Dans le SQL Editor, exécutez aussi le fichier <code>Tadbir_Onglets.sql</code> (une seule fois). Il ajoute le réglage « Onglets » utilisé par la console et l’application.</div></li>'
+   +'<li><div><b>Relier la console et l’application</b>Supabase › Project Settings › API : copiez « Project URL » et la clé « anon public ». Collez-les dans cette console (écran de connexion) et dans l’application, en haut du fichier : <code>BSM_CLOUD_CONFIG={url:"…",anonKey:"…"}</code>.</div></li>'
+   +'<li><div><b>Devenir super-administrateur</b>Créez votre compte dans Supabase › Authentication › Users (« Add user »), connectez-vous à cette console, puis exécutez une fois la commande affichée à l’écran dans le SQL Editor.</div></li>'
+   +'<li><div><b>Créer une société cliente</b>« Nouvelle société » : identité, formule, date de fin, nombre maximum d’utilisateurs, et les e-mails des personnes à inviter.</div></li>'
+   +'<li><div><b>Les employés s’inscrivent</b>Chacun ouvre l’application et clique « Créer un compte employé » avec l’e-mail invité : il entre directement dans sa société.</div></li>'
+   +'</ol></div></div>'
+   +'<div class="card" style="margin-top:16px"><div class="card-h"><h3>Connexion actuelle</h3></div><div class="card-b">'
+   +(API.demo?'<span class="muted">Mode démonstration — aucune base reliée.</span>':'<div class="info"><div><span>Project URL</span><b>'+E(c&&c.url)+'</b></div><div><span>Compte</span><b>'+E(ME.email)+'</b></div></div>')
+   +'<div class="row" style="margin-top:14px">'+(API.demo?'<button class="btn" id="bReal">Relier une vraie base Supabase</button>':(!c||!c.fixed?'<button class="btn sec" id="bChg">Changer de base</button>':''))+'</div>'
+   +'<div class="alert info" style="margin-top:14px">Sécurité : publiez cette console à une adresse séparée (ex. <code>admin.bsmelevator.com</code>) et ne la donnez à personne. Même si quelqu’un l’ouvre, il ne peut rien faire sans un compte super-administrateur.</div></div></div>';
+  const r=$('#bReset');if(r)r.onclick=()=>confirmBox('Réinitialiser la démo ?','Les données fictives reviennent à leur état de départ.','Réinitialiser',async()=>{API.reset();await refresh();toast('Démo réinitialisée.')});
+  const rl=$('#bReal');if(rl)rl.onclick=()=>{localStorage.removeItem('tadbir_console_mode');start()};
+  const ch=$('#bChg');if(ch)ch.onclick=()=>confirmBox('Changer de base ?','Vous serez déconnecté et devrez saisir une nouvelle adresse Supabase.','Changer',async()=>{await API.logout();localStorage.removeItem('tadbir_console_cfg');setupView()});
+}
+
+/* =====================================================================
+   Fenêtres
+   ===================================================================== */
+function modal(title,body,foot,cls){
+  const o=document.createElement('div');o.className='ov';
+  o.innerHTML='<div class="modal '+(cls||'')+'" role="dialog" aria-modal="true"><div class="mh"><h3>'+E(title)+'</h3><button type="button" aria-label="Fermer">×</button></div><div class="mb">'+body+'</div><div class="mf">'+foot+'</div></div>';
+  document.body.appendChild(o);
+  const close=()=>o.remove();o.querySelector('.mh button').onclick=close;
+  o.addEventListener('mousedown',e=>{if(e.target===o)close()});
+  return {o,close};
+}
+function confirmBox(title,text,label,fn){
+  const {o,close}=modal(title,'<p style="margin:0">'+E(text)+'</p>','<button class="btn sec" data-c>Annuler</button><button class="btn danger" data-ok>'+E(label)+'</button>','sm');
+  o.querySelector('[data-c]').onclick=close;
+  o.querySelector('[data-ok]').onclick=async e=>{e.currentTarget.disabled=true;try{await fn();close()}catch(x){toast(x.message||String(x),true);e.currentTarget.disabled=false}};
+}
+function deleteBox(c){
+  const {o,close}=modal('Supprimer définitivement ?','<div class="alert err" style="margin-bottom:14px">Toutes les données de <b>'+E(c.name)+'</b> seront effacées : factures, BL, stock, clients, paie… Cette action est irréversible.</div><div class="field"><label>Pour confirmer, tapez le nom exact : '+E(c.name)+'</label><input id="dC" autocomplete="off"></div>','<button class="btn sec" data-c>Annuler</button><button class="btn danger" data-ok disabled>Supprimer</button>','sm');
+  const i=o.querySelector('#dC'),b=o.querySelector('[data-ok]');
+  i.oninput=()=>{b.disabled=i.value.trim()!==c.name};
+  o.querySelector('[data-c]').onclick=close;
+  b.onclick=()=>run(b,()=>API.deleteCompany(c.id,i.value),'Société supprimée.').then(()=>{close();UI.coId=null;DET=null;UI.page='cos';refresh()}).catch(()=>{});
+  i.focus();
+}
+
+/* ---------- onglets (société / utilisateur) ---------- */
+function coTabs(){return DET&&DET.tabs?DET.tabs.company:null}
+function memTabs(uid){return DET&&DET.tabs&&DET.tabs.members?DET.tabs.members[uid]||null:null}
+function tabCount(list){return (list?list.filter(t=>ALL_TABS.includes(t)).length:ALL_TABS.length)+' / '+ALL_TABS.length}
+function memTabLabel(uid){const own=memTabs(uid);if(!own)return 'Société';const co=coTabs()||ALL_TABS;return own.filter(t=>co.includes(t)).length+' / '+co.length}
+function tabsReady(){if(DET&&DET.tabs)return true;
+  toast(API.demo?'Onglets indisponibles.':'Exécutez d’abord le script Tadbir_Onglets.sql dans Supabase › SQL Editor (voir « Installation »).',true);return false}
+function companyTabsBox(c){if(!tabsReady())return;
+  tabsBox({title:'Onglets — '+c.name,sub:'Onglets visibles pour <b>tous les utilisateurs</b> de cette société. Un onglet retiré ici disparaît pour tout le monde.',
+    universe:ALL_TABS,cur:coTabs(),resetLabel:'Tout afficher',
+    save:list=>API.setTabs('company',c.id,list),okMsg:'Onglets de la société enregistrés.'})}
+function memberTabsBox(c,u){if(!tabsReady())return;
+  const uni=(coTabs()||ALL_TABS).filter(t=>ALL_TABS.includes(t));
+  tabsBox({title:'Onglets — '+(u.full_name||u.email),sub:'Onglets visibles pour <b>'+E(u.email)+'</b>. Seuls les onglets ouverts pour '+E(c.name)+' peuvent être ajoutés.',
+    universe:uni,cur:memTabs(u.user_id),resetLabel:'Reprendre les onglets de la société',
+    save:list=>API.setTabs('member',u.user_id,list),okMsg:'Onglets de l’utilisateur enregistrés.'})}
+function tabsBox(o){
+  const uni=o.universe.slice();LOCKED_TABS.forEach(t=>{if(!uni.includes(t))uni.unshift(t)});
+  let sel=new Set((o.cur||uni).filter(t=>uni.includes(t)));LOCKED_TABS.forEach(t=>sel.add(t));
+  let addOpen=false;
+  const groups=()=>TAB_GROUPS.map(g=>[g[0],g[1].filter(t=>uni.includes(t[0]))]).filter(g=>g[1].length);
+  const {o:ov,close}=modal(o.title,'<div id="tbx"></div>','<button type="button" class="lnk" data-reset>'+E(o.resetLabel)+'</button><button class="btn sec" data-c>Annuler</button><button class="btn" data-ok>Enregistrer</button>','md');
+  const box=ov.querySelector('#tbx');
+  function draw(){
+    const shown=groups().map(g=>{const on=g[1].filter(t=>sel.has(t[0]));
+      return '<div class="tg"><div class="tg-h">'+E(g[0])+' <small>'+on.length+' / '+g[1].length+'</small>'+(on.some(t=>!LOCKED_TABS.includes(t[0]))?'<button type="button" data-gx="'+E(g[0])+'">Tout retirer</button>':'')+'</div><div class="tg-c">'
+        +(on.length?on.map(t=>LOCKED_TABS.includes(t[0])?'<span class="tchip lock" title="Toujours affiché">'+E(t[1])+'</span>':'<span class="tchip">'+E(t[1])+'<button type="button" data-x="'+t[0]+'" aria-label="Retirer '+E(t[1])+'" title="Retirer">×</button></span>').join(''):'<span class="tg-empty">Aucun onglet de ce groupe.</span>')+'</div></div>'}).join('');
+    const hid=groups().map(g=>[g[0],g[1].filter(t=>!sel.has(t[0]))]).filter(g=>g[1].length);
+    const nHid=hid.reduce((a,g)=>a+g[1].length,0);
+    box.innerHTML='<p class="muted" style="margin:0 0 12px;font-size:13px">'+o.sub+'</p>'
+      +'<div class="tsum"><b>'+sel.size+' / '+uni.length+'</b><span class="muted">onglets affichés</span><span class="spacer"></span>'
+      +'<button type="button" class="btn sec sm" data-add'+(nHid?'':' disabled')+'>'+ICON.plus+(addOpen?'Fermer l’ajout':'Ajouter un onglet'+(nHid?' ('+nHid+')':''))+'</button></div>'
+      +(addOpen&&nHid?'<div class="addp" style="margin-bottom:12px"><div class="row" style="margin-bottom:8px"><b style="font-size:13px">Onglets masqués</b><span class="spacer"></span><button type="button" class="btn sec sm" data-all>Tout ajouter</button></div>'
+        +hid.map(g=>'<div class="tg"><div class="tg-h">'+E(g[0])+'</div><div class="tg-c">'+g[1].map(t=>'<button type="button" class="tadd" data-a="'+t[0]+'">+ '+E(t[1])+'</button>').join('')+'</div></div>').join('')+'</div>':'')
+      +shown;
+    box.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{sel.delete(b.dataset.x);draw()});
+    box.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{sel.add(b.dataset.a);if(!groups().some(g=>g[1].some(t=>!sel.has(t[0]))))addOpen=false;draw()});
+    box.querySelectorAll('[data-gx]').forEach(b=>b.onclick=()=>{const g=groups().find(x=>x[0]===b.dataset.gx);g[1].forEach(t=>{if(!LOCKED_TABS.includes(t[0]))sel.delete(t[0])});draw()});
+    const ad=box.querySelector('[data-add]');if(ad)ad.onclick=()=>{addOpen=!addOpen;draw()};
+    const al=box.querySelector('[data-all]');if(al)al.onclick=()=>{uni.forEach(t=>sel.add(t));addOpen=false;draw()};
+  }
+  draw();
+  ov.querySelector('[data-c]').onclick=close;
+  ov.querySelector('[data-reset]').onclick=()=>{uni.forEach(t=>sel.add(t));addOpen=false;draw()};
+  ov.querySelector('[data-ok]').onclick=e=>{
+    const list=ALL_TABS.filter(t=>sel.has(t));
+    const full=uni.every(t=>sel.has(t));
+    run(e.currentTarget,()=>o.save(full?null:list),o.okMsg).then(()=>{close();return refresh()}).catch(()=>{});
+  };
+}
+
+function companyForm(c){
+  const isNew=!c;c=c||{plan:'Mensuel',max_users:3,starts_at:todayStr(),price_mad:''};
+  if(isNew)c.expires_at=addPeriod(c.starts_at,1,0);
+  const fld=(k,l,t,ph,cls)=>'<div class="field '+(cls||'')+'"><label>'+l+'</label><input id="f_'+k+'" type="'+(t||'text')+'" value="'+E(c[k]==null?'':c[k])+'" placeholder="'+E(ph||'')+'"></div>';
+  const urow=(r)=>'<div class="urow"><input class="inp ur-n" placeholder="Nom complet"><input class="inp ur-e" type="email" placeholder="e-mail@societe.ma"><select class="inp ur-r">'+ROLES.map(x=>'<option'+(x===r?' selected':'')+'>'+x+'</option>').join('')+'</select><button type="button" class="ur-x" title="Retirer">×</button></div>';
+  const body='<div class="sect">Identité</div><div class="fg">'
+    +fld('name','Raison sociale *','text','Ex. ATLAS LIFT','full')+fld('legal_form','Forme juridique','text','SARL, SA, SARL AU…')+fld('city','Ville')
+    +fld('ice','ICE')+fld('if_num','Identifiant fiscal (IF)')+fld('rc','Registre de commerce (RC)')+fld('cnss','CNSS')
+    +fld('phone','Téléphone','tel')+fld('email','E-mail','email')+fld('contact','Personne à contacter')+fld('address','Adresse','text','','full')+'</div>'
+    +'<div class="sect">Abonnement</div><div class="fg">'
+    +'<div class="field"><label>Formule</label><select id="f_plan">'+Object.keys(PLANS).map(k=>'<option value="'+k+'"'+(c.plan===k?' selected':'')+'>'+PLANS[k].label+'</option>').join('')+'</select></div>'
+    +fld('price_mad','Prix (MAD HT, par période)','number','0')
+    +'<div class="field"><label>Nombre maximum d’utilisateurs</label><input id="f_max_users" type="number" min="1" step="1" value="'+E(c.max_users)+'"><small>Comptes actifs en même temps.</small></div><div></div>'
+    +fld('starts_at','Début','date')
+    +'<div class="field"><label>Fin d’abonnement</label><input id="f_expires_at" type="date" value="'+E(c.expires_at||'')+'"><small id="expHint">Calculée selon la formule, modifiable.</small></div>'
+    +'<div class="field full"><label>Notes internes</label><textarea id="f_notes" rows="2" placeholder="Paiement, contrat, contact…">'+E(c.notes||'')+'</textarea></div></div>'
+    +(isNew?'<div class="sect">Utilisateurs à inviter</div><p class="muted" style="margin:-4px 0 10px;font-size:13px">Ils s’inscriront dans l’application avec ces e-mails et seront rattachés automatiquement. Lignes vides ignorées.</p><div id="urows">'+urow('Administrateur')+urow('Employé')+urow('Employé')+'</div><button type="button" class="btn sec sm" id="addU">'+ICON.plus+'Ajouter une personne</button>':'');
+  const {o,close}=modal(isNew?'Nouvelle société cliente':'Modifier — '+c.name,body,'<button class="btn sec" data-c>Annuler</button><button class="btn" data-ok>'+(isNew?'Créer la société':'Enregistrer')+'</button>');
+  const g=k=>o.querySelector('#f_'+k);
+  const recalc=()=>{const p=PLANS[g('plan').value];g('expires_at').value=addPeriod(g('starts_at').value||todayStr(),p.months,p.days)};
+  g('plan').onchange=recalc;g('starts_at').onchange=recalc;
+  o.querySelector('[data-c]').onclick=close;
+  const bindX=()=>o.querySelectorAll('.ur-x').forEach(b=>b.onclick=()=>b.parentElement.remove());
+  if(isNew){bindX();o.querySelector('#addU').onclick=()=>{o.querySelector('#urows').insertAdjacentHTML('beforeend',urow('Employé'));bindX()}}
+  o.querySelector('[data-ok]').onclick=async e=>{
+    const p={id:isNew?null:c.id};['name','legal_form','city','ice','if_num','rc','cnss','phone','email','contact','address','plan','price_mad','max_users','starts_at','expires_at','notes'].forEach(k=>p[k]=String(g(k).value||'').trim());
+    if(!p.name){toast('La raison sociale est obligatoire.',true);g('name').focus();return}
+    const mx=parseInt(p.max_users,10);if(!(mx>=1)){toast('Le nombre maximum d’utilisateurs doit être au moins 1.',true);return}
+    if(p.expires_at&&p.starts_at&&p.expires_at<p.starts_at){toast('La date de fin est avant la date de début.',true);return}
+    let users=[];
+    if(isNew){users=[...o.querySelectorAll('.urow')].map(r=>({n:r.querySelector('.ur-n').value.trim(),e:r.querySelector('.ur-e').value.trim(),r:r.querySelector('.ur-r').value})).filter(u=>u.e||u.n);
+      const bad=users.find(u=>!emailOk(u.e));if(bad){toast('E-mail manquant ou invalide pour « '+(bad.n||bad.e)+' ».',true);return}
+      const seen={};for(const u of users){const k=u.e.toLowerCase();if(seen[k]){toast('E-mail en double : '+u.e,true);return}seen[k]=1}
+      if(users.length>mx){toast(users.length+' personnes invitées pour '+mx+' place(s) : augmentez le maximum ou retirez des lignes.',true);return}}
+    const b=e.currentTarget;b.disabled=true;
+    try{
+      const id=await API.saveCompany(p);
+      const errs=[];for(const u of users){try{await API.invite(id,u.e,u.n,u.r)}catch(x){errs.push(u.e+' : '+x.message)}}
+      close();toast(isNew?'Société créée'+(users.length?' — '+(users.length-errs.length)+' invitation(s) envoyée(s).':'.'):'Modifications enregistrées.');
+      if(errs.length)setTimeout(()=>toast(errs.join(' | '),true),900);
+      UI.coId=id;UI.tab='users';await refresh();window.scrollTo(0,0);
+    }catch(x){toast(x.message||String(x),true);b.disabled=false}
+  };
+  setTimeout(()=>g('name').focus(),40);
+}
+
+addEventListener('keydown',e=>{if(e.key==='Escape'){const o=document.querySelector('.ov:last-of-type');if(o)o.remove()}});
+start();
+})();
+</script>
+</body>
+</html>
