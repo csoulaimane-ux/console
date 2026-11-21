@@ -6,40 +6,45 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Tadbir Console">
 <meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>Tadbir — Console d'administration</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MCA0MCI+PHBhdGggZD0iTTIwIDEuNWwxNiA5LjI1djE4LjVMMjAgMzguNSA0IDI5LjI1di0xOC41eiIgZmlsbD0iIzBlM2E0YSIvPjxwYXRoIGQ9Ik0xMi41IDE0aDE1TTIwIDE0djEzIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMy40IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48Y2lyY2xlIGN4PSIyNyIgY3k9IjI1LjUiIHI9IjIiIGZpbGw9IiMyMmQzZWUiLz48L3N2Zz4=">
 <script>
 /* ==== Configuration Supabase (la même que dans l'application) ==== */
 window.TADBIR_CONFIG = { url: "https://vxyxbkpjtonkojclukmf.supabase.co", anonKey: "sb_publishable_lanzT2mLiGVlEotqtsQACQ_xIiCycAm" };
 </script>
 <style>
 :root{
-  --ink:#0d1b3d;--ink2:#3a4560;--mut:#6b7590;--line:#e3e7ef;--bg:#f4f6fa;--card:#fff;
-  --navy:#0f2350;--navy2:#16306b;--acc:#0e9f8e;--acc2:#e6f6f3;--blue:#2453c8;--blue2:#eaf0fd;
+  --ink:#0f172a;--ink2:#334155;--mut:#64748b;--line:#e2e8f0;--bg:#f1f5f9;--card:#fff;
+  --navy:#1e293b;--navy2:#334155;--acc:#0891b2;--acc2:#ecfeff;--blue:#0891b2;--blue2:#e0f7fb;--cyan:#06b6d4;
   --red:#c2341b;--red2:#fdeeea;--amb:#a86400;--amb2:#fff4e0;--grn:#1d7a43;--grn2:#e7f6ec;
-  --r:14px;--sh:0 1px 2px rgba(13,27,61,.05),0 8px 24px -12px rgba(13,27,61,.18);
+  --r:14px;--sh:0 1px 2px rgba(15,23,42,.05),0 8px 24px -12px rgba(15,23,42,.18);
 }
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
 button,input,select,textarea{font:inherit;color:inherit}
 a{color:var(--blue)}
 .hide{display:none!important}
 
 /* ---------- layout ---------- */
 .shell{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
-.side{background:var(--navy);color:#c9d3ea;display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:0;height:100vh}
+.side{background:var(--navy);color:#cbd5e1;display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:0;height:100vh}
 .brand{display:flex;align-items:center;gap:11px;padding:0 8px 22px}
-.logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--acc),#1b6fd1);display:grid;place-items:center;color:#fff;font-weight:800;font-size:18px;letter-spacing:-.02em}
+.logo{width:40px;height:40px;flex:none;display:grid;place-items:center}
+.logo svg{width:40px;height:40px;display:block}
+.side .logo .hx{stroke:rgba(255,255,255,.28);stroke-width:1.2}
 .brand b{display:block;color:#fff;font-size:16px;letter-spacing:.01em}
-.brand small{color:#8e9bc0;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.brand small{color:#94a3b8;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
 .nav{display:grid;gap:3px}
-.nav button{all:unset;cursor:pointer;display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:#c9d3ea;font-weight:600;font-size:14px}
+.nav button{all:unset;cursor:pointer;display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:#cbd5e1;font-weight:600;font-size:14px}
 .nav button svg{width:18px;height:18px;flex:none;opacity:.85}
 .nav button:hover{background:rgba(255,255,255,.06);color:#fff}
-.nav button.on{background:rgba(255,255,255,.11);color:#fff}
-.nav .cnt{margin-inline-start:auto;background:var(--acc);color:#fff;border-radius:999px;font-size:11px;padding:1px 7px}
-.sidefoot{margin-top:auto;padding:14px 10px 0;border-top:1px solid rgba(255,255,255,.08);font-size:12px;color:#8e9bc0}
+.nav button.on{background:rgba(255,255,255,.12);color:#fff;box-shadow:inset 3px 0 0 var(--cyan)}
+.nav .cnt{margin-inline-start:auto;background:var(--cyan);color:#fff;border-radius:999px;font-size:11px;padding:1px 7px}
+.sidefoot{margin-top:auto;padding:14px 10px 0;border-top:1px solid rgba(255,255,255,.08);font-size:12px;color:#94a3b8}
 .sidefoot b{color:#fff;font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis}
-.sidefoot button{all:unset;cursor:pointer;color:#c9d3ea;margin-top:8px;font-weight:600}
+.sidefoot button{all:unset;cursor:pointer;color:#cbd5e1;margin-top:8px;font-weight:600}
 .demo-tag{display:inline-block;background:#ffcf5c;color:#3d2a00;font-weight:700;font-size:10px;letter-spacing:.08em;padding:2px 7px;border-radius:6px;margin-top:6px}
 
 .main{padding:26px 32px 60px;min-width:0}
@@ -54,7 +59,7 @@ a{color:var(--blue)}
 .btn:hover{filter:brightness(1.06)}
 .btn:disabled{opacity:.55;cursor:default}
 .btn.sec{background:#fff;color:var(--ink);border-color:var(--line)}
-.btn.sec:hover{background:#f8f9fc}
+.btn.sec:hover{background:#f8fafc}
 .btn.acc{background:var(--acc)}
 .btn.danger{background:#fff;color:var(--red);border-color:#f2c6bc}
 .btn.sm{padding:6px 10px;font-size:13px;border-radius:8px}
@@ -74,10 +79,10 @@ a{color:var(--blue)}
 
 table{width:100%;border-collapse:collapse}
 th{text-align:start;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);font-weight:700;padding:10px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
-td{padding:12px 14px;border-bottom:1px solid #eef1f6;vertical-align:middle}
+td{padding:12px 14px;border-bottom:1px solid #eef2f6;vertical-align:middle}
 tr:last-child td{border-bottom:0}
 tr.click{cursor:pointer}
-tr.click:hover td{background:#fafbfd}
+tr.click:hover td{background:#f8fafc}
 .tw{overflow-x:auto}
 .nm b{display:block}
 .nm small{color:var(--mut)}
@@ -88,12 +93,12 @@ tr.click:hover td{background:#fafbfd}
 .b-ok{background:var(--grn2);color:var(--grn)}
 .b-soon{background:var(--amb2);color:var(--amb)}
 .b-exp{background:var(--red2);color:var(--red)}
-.b-sus{background:#eceff5;color:#4b5570}
+.b-sus{background:#f1f5f9;color:#475569}
 .b-pend{background:var(--blue2);color:var(--blue)}
-.pill{display:inline-block;font-size:12px;font-weight:650;padding:2px 8px;border-radius:7px;background:#eef1f7;color:var(--ink2)}
+.pill{display:inline-block;font-size:12px;font-weight:650;padding:2px 8px;border-radius:7px;background:#f1f5f9;color:var(--ink2)}
 
 .seats{display:flex;align-items:center;gap:9px;min-width:120px}
-.bar{flex:1;height:6px;background:#e9edf4;border-radius:9px;overflow:hidden;min-width:50px}
+.bar{flex:1;height:6px;background:#e2e8f0;border-radius:9px;overflow:hidden;min-width:50px}
 .bar i{display:block;height:100%;background:var(--acc);border-radius:9px}
 .bar i.full{background:var(--amb)}
 
@@ -107,8 +112,8 @@ tr.click:hover td{background:#fafbfd}
 
 .field{display:grid;gap:5px}
 .field label{font-size:12px;font-weight:700;color:var(--ink2)}
-.field input,.field select,.field textarea,.inp{padding:9px 11px;border:1px solid #d6dce8;border-radius:9px;background:#fff;width:100%}
-.field input:focus,.field select:focus,.field textarea:focus,.inp:focus{outline:2px solid #c9d7f7;border-color:var(--blue)}
+.field input,.field select,.field textarea,.inp{padding:9px 11px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;width:100%}
+.field input:focus,.field select:focus,.field textarea:focus,.inp:focus{outline:2px solid #a5f3fc;border-color:var(--blue)}
 .field small{color:var(--mut);font-size:12px}
 .fg{align-items:start;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px}
 .fg .full{grid-column:1/-1}
@@ -140,61 +145,106 @@ tr.click:hover td{background:#fafbfd}
 .stat span{font-size:12px;color:var(--mut);font-weight:650}
 .stat b{display:block;font-size:22px;margin-top:2px}
 .tog{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-weight:600;font-size:13px}
-.tog input{width:36px;height:20px;appearance:none;background:#d2d8e4;border-radius:20px;position:relative;cursor:pointer;transition:.15s;margin:0;flex:none}
+.tog input{width:36px;height:20px;appearance:none;background:#cbd5e1;border-radius:20px;position:relative;cursor:pointer;transition:.15s;margin:0;flex:none}
 .tog input::after{content:"";position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:2px;left:2px;transition:.15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
 .tog input:checked{background:var(--acc)}
 .tog input:checked::after{left:18px}
 .tog input:disabled{opacity:.5}
-.inline-in{padding:6px 9px;border:1px solid #dfe4ee;border-radius:8px;width:100%;min-width:130px}
-.sel{padding:6px 8px;border:1px solid #dfe4ee;border-radius:8px;background:#fff}
+.inline-in{padding:6px 9px;border:1px solid #cbd5e1;border-radius:8px;width:100%;min-width:130px}
+.sel{padding:6px 8px;border:1px solid #cbd5e1;border-radius:8px;background:#fff}
 .log{display:grid}
-.log div{display:grid;grid-template-columns:120px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid #eef1f6}
+.log div{display:grid;grid-template-columns:120px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid #eef2f6}
 .log div:last-child{border-bottom:0}
 .log time{color:var(--mut);font-size:12.5px;font-variant-numeric:tabular-nums}
 .log b{font-weight:650}
 .log small{color:var(--mut)}
 .alert{display:block;padding:12px 14px;line-height:1.5;border-radius:11px;font-size:13.5px}
 .alert.warn{background:var(--amb2);color:#6b4100}
-.alert.info{background:var(--blue2);color:#1d3d8f}
+.alert.info{background:var(--blue2);color:#155e75}
 .alert.err{background:var(--red2);color:#8f2512}
 code,.code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px}
-.code{display:block;background:#0f1730;color:#d6e2ff;border-radius:10px;padding:12px 14px;white-space:pre-wrap;word-break:break-all;margin:8px 0}
+.code{display:block;background:#0f172a;color:#d4f1f8;border-radius:10px;padding:12px 14px;white-space:pre-wrap;word-break:break-all;margin:8px 0}
 .steps{counter-reset:s;display:grid;gap:14px;padding:0;margin:0;list-style:none}
 .steps li{counter-increment:s;display:grid;grid-template-columns:30px 1fr;gap:12px}
 .steps li::before{content:counter(s);width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px}
 .steps b{display:block;margin-bottom:2px}
 
+/* onglets */
+.modal.md{width:min(580px,100%)}
+.tsum{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.tsum b{font-size:15px}
+.tg{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px}
+.tg-h{display:flex;align-items:center;gap:8px;font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);margin-bottom:8px}
+.tg-h small{color:var(--mut);font-weight:600;letter-spacing:0;text-transform:none}
+.tg-h button{all:unset;cursor:pointer;margin-inline-start:auto;font-size:12px;font-weight:600;color:var(--mut);text-transform:none;letter-spacing:0}
+.tg-h button:hover{color:var(--red)}
+.tg-c{display:flex;flex-wrap:wrap;gap:6px}
+.tchip{display:inline-flex;align-items:center;gap:3px;padding:4px 4px 4px 10px;border-radius:999px;background:var(--blue2);color:#155e75;font-size:13px;font-weight:600}
+.tchip.lock{padding-right:10px;background:#f1f5f9;color:var(--ink2)}
+.tchip button{all:unset;cursor:pointer;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:16px;line-height:1;color:#155e75}
+.tchip button:hover{background:#fbd5cc;color:var(--red)}
+.tadd{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;border:1px dashed #cbd5e1;color:var(--ink2);font-size:13px;font-weight:600;background:#fff}
+.tadd:hover{border-color:var(--blue);color:var(--blue);background:var(--blue2)}
+.tg-empty{font-size:12.5px;color:var(--mut)}
+.addp{border:1px dashed #cbd5e1;border-radius:12px;padding:12px;margin-top:6px;background:#f8fafc}
+.addp .tg{background:#fff}
+.mf .lnk{all:unset;cursor:pointer;margin-inline-end:auto;font-size:13px;font-weight:600;color:var(--blue);text-decoration:underline;text-underline-offset:2px;align-self:center}
+.tbtn{display:inline-flex;align-items:center;gap:6px}
+.tbtn i{font-style:normal;font-size:11px;font-weight:700;background:var(--blue2);color:#155e75;border-radius:999px;padding:1px 7px}
+
 /* modal + toast */
-.ov{position:fixed;inset:0;background:rgba(10,20,45,.45);display:flex;align-items:flex-start;justify-content:center;padding:5vh 16px;z-index:50;overflow-y:auto}
+.ov{position:fixed;inset:0;background:rgba(15,23,42,.5);display:flex;align-items:flex-start;justify-content:center;padding:5vh 16px;z-index:50;overflow-y:auto}
 .modal{background:#fff;border-radius:16px;width:min(760px,100%);box-shadow:0 30px 70px -20px rgba(0,0,0,.45)}
 .modal.sm{width:min(460px,100%)}
 .mh{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line)}
 .mh h3{margin:0;font-size:18px}
 .mh button{all:unset;cursor:pointer;font-size:22px;color:var(--mut);line-height:1;padding:4px}
 .mb{padding:18px 22px}
-.mf{display:flex;justify-content:flex-end;gap:10px;padding:14px 22px;border-top:1px solid var(--line);background:#fafbfd;border-radius:0 0 16px 16px}
+.mf{display:flex;justify-content:flex-end;gap:10px;padding:14px 22px;border-top:1px solid var(--line);background:#f8fafc;border-radius:0 0 16px 16px}
 .urow{display:grid;grid-template-columns:1.1fr 1.4fr 1fr 34px;gap:8px;margin-bottom:8px}
 .urow button{all:unset;cursor:pointer;color:var(--mut);text-align:center;font-size:18px}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 16px;border-radius:11px;font-weight:600;z-index:80;box-shadow:0 10px 30px -10px rgba(0,0,0,.5);max-width:92vw}
 .toast.err{background:var(--red)}
 
-/* auth screens */
-.gate{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(1200px 600px at 10% -10%,#1d3f8f 0,transparent 60%),linear-gradient(160deg,#0b1a3e,#0f2350)}
-.gbox{background:#fff;border-radius:18px;width:min(440px,100%);padding:28px;box-shadow:0 30px 60px -20px rgba(0,0,0,.5)}
-.gbox .brand{padding:0 0 18px}
-.gbox .brand b{color:var(--ink)}
-.gbox .brand small{color:var(--mut)}
-.gbox h2{margin:0 0 6px;font-size:21px}
-.gbox p{margin:0 0 16px;color:var(--mut)}
-.gbox form{display:grid;gap:12px}
-.gbox .btn{justify-content:center;width:100%;padding:12px}
-.glinks{display:flex;justify-content:space-between;gap:10px;margin-top:14px;font-size:13px}
-.glinks a{font-weight:600;text-decoration:none}
+/* auth screens — même page d'accueil que l'application Tadbir */
+.gate{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:18px;background:#1e293b;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#18283b}
+.gbox{background:#fff;border-radius:16px;width:min(420px,100%);padding:32px 30px;box-shadow:0 28px 64px -20px rgba(0,0,0,.55)}
+.gbrand{display:flex;align-items:center;justify-content:center;gap:9px;margin:-4px 0 18px}
+.gbrand svg{width:42px;height:42px;display:block;flex:none}
+.gbrand .tb-w{display:block;font-family:Sora,Inter,sans-serif;font-size:21px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#0f172a;line-height:1.05}
+.gbrand .tb-w::after{content:".";color:#06b6d4}
+.gbrand small{display:flex;justify-content:space-between;gap:3px;margin-top:5px;font-size:9.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#64748b;line-height:1}
+.gbox h2{margin:4px 0;font-size:24px;font-weight:700;letter-spacing:-.01em;color:#0f172a}
+.gbox p{margin:0 0 22px;color:#64748b;line-height:1.5}
+.gbox form{display:grid;gap:16px}
+.gbox .field{gap:7px}
+.gbox .field label{font-size:12px;font-weight:700;color:#334155}
+.gbox .field input{padding:12px;border:1px solid #cbd5e1;border-radius:10px;font-size:15px}
+.gbox .field input:focus{outline:2px solid #a5f3fc;border-color:#0891b2}
+.gbox .btn{justify-content:center;width:100%;padding:13px;border-radius:10px;font-size:15px;font-weight:700;background:#0891b2;border:0}
+.gbox .btn:hover{background:#0e7490;filter:none}
+.gbox .btn.sec{background:#fff;color:#0f172a;border:1px solid #cbd5e1}
+.gbox .btn.sec:hover{background:#f8fafc}
+.gbox a{color:#0891b2}
+.gbox .code{background:#0f172a}
+.pw{position:relative;display:block}
+.pw input{padding-right:46px!important}
+.pw .eye{all:unset;position:absolute;right:6px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:8px;display:grid;place-items:center;color:#8a94a6;cursor:pointer}
+.pw .eye:hover{color:#0891b2;background:#ecfeff}
+.gsec{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:-4px;font-size:12px;color:#64748b}
+.gsec svg{color:#0891b2;flex:none}
+.glinks{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font-size:13px}
+.glinks a{font-weight:600;text-decoration:underline;text-underline-offset:2px}
+.glinks+.glinks{margin-top:10px;padding-top:12px;border-top:1px solid #e2e8f0}
+.glinks+.glinks a{font-weight:500;color:#64748b}
+.gfoot{font-size:12px;color:rgba(255,255,255,.62);text-align:center}
 .msg{min-height:18px;font-size:13px;color:var(--grn)}
+.gbox .msg:empty{display:none}
 .msg.err{color:var(--red)}
-.or{display:flex;align-items:center;gap:10px;color:var(--mut);font-size:12px;margin:14px 0}
+.or{display:flex;align-items:center;gap:10px;color:#667085;font-size:12px;margin:14px 0}
 .or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
 
+@media (max-width:1440px){.hide-l{display:none}}
 @media (max-width:1100px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.two{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:820px){
   .shell{grid-template-columns:1fr}
@@ -231,6 +281,19 @@ const $=s=>document.querySelector(s);
 const E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ROLES=['Administrateur','Responsable','Employé'];
 const PLANS={Essai:{months:0,days:14,label:'Essai (14 jours)'},Mensuel:{months:1,days:0,label:'Mensuel'},Annuel:{months:12,days:0,label:'Annuel'}};
+/* Onglets de l'application Tadbir (identifiants = data-page) */
+const TAB_GROUPS=[
+  ['Général',[['dashboard','Tableau de bord']]],
+  ['Ventes',[['expedition','Fiches d’expédition'],['invoice','Nouvelle facture'],['register','Registre factures'],['proforma','Factures proforma'],['devis','Offres (devis)'],['facrecur','Factures récurrentes'],['contrats','Contrats'],['bl','Bons de livraison (BL)']]],
+  ['Clients',[['clients','Clients'],['situation','Situation clients'],['relances','Relances clients'],['avoirs','Avoirs clients'],['avpay','Paiements des avoirs']]],
+  ['Stock et achats',[['stock','Gestion du stock'],['damaged','Marchandise endommagée'],['achat','Achats & fournisseurs'],['reappro','Réapprovisionnement'],['bcmd','Bons de commande'],['depenses','Toutes les dépenses'],['deprecur','Dépenses récurrentes']]],
+  ['Finance',[['caisses','Gestion des caisses'],['payonline','Paiement en ligne'],['finance','Finance'],['encaissements','Encaissements'],['caisse','Caisse'],['pilotage','Pilotage'],['rapports','Rapports'],['calendrier','Calendrier']]],
+  ['Ressources humaines',[['monespace','Mon espace'],['rh','RH'],['rhdemandes','Demandes RH'],['rhmsg','Messagerie RH'],['depts','Départements'],['charges','Charges']]],
+  ['Administration',[['journal','Journal & contrôle'],['sauvegardes','Sauvegardes'],['emails','Emails'],['utilisateurs','Utilisateurs'],['parametres','Paramètres'],['maintenance','Diagnostic'],['profil','Profil'],['corbeille','Corbeille']]]
+];
+const ALL_TABS=TAB_GROUPS.reduce((a,g)=>a.concat(g[1].map(t=>t[0])),[]);
+const TAB_LABEL={};TAB_GROUPS.forEach(g=>g[1].forEach(t=>TAB_LABEL[t[0]]=t[1]));
+const LOCKED_TABS=['dashboard'];
 const COLL={invoices:'Factures',bls:'Bons de livraison',clients:'Clients',products:'Produits',purchases:'Achats',suppliers:'Fournisseurs',employees:'Employés',cashMoves:'Mouvements caisse'};
 const ICON={
   dash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>',
@@ -238,6 +301,7 @@ const ICON={
   user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>',
   log:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>',
   cog:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  tabs:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 4v5M15 4v5"/></svg>',
   plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
   search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>'
 };
@@ -306,7 +370,9 @@ function SupabaseAPI(c){
     invite:(cid,email,name,role)=>rpc('tb_invite',{p_company:cid,p_email:email,p_name:name,p_role:role}),
     cancelInvite:id=>rpc('tb_cancel_invite',{p_id:id}),
     setMember:(u,cid,role,active,name)=>rpc('admin_set_member',{p_user:u,p_company:cid,p_role:role,p_active:active,p_name:name}),
-    deleteCompany:(id,conf)=>rpc('admin_delete_company',{p_id:id,p_confirm:conf})
+    deleteCompany:(id,conf)=>rpc('admin_delete_company',{p_id:id,p_confirm:conf}),
+    getTabs:cid=>rpc('admin_get_tabs',{p_company:cid}),
+    setTabs:(kind,id,tabs)=>rpc('admin_set_tabs',{p_kind:kind,p_id:id,p_tabs:tabs})
   };
 }
 
@@ -374,6 +440,9 @@ function DemoAPI(){
       log(cid||old,cid?'Utilisateur modifié':'Utilisateur retiré de la société',{email:m.email,role,actif:active});return ok()},
     deleteCompany(id,conf){const c=co(id);if(!c)return fail('Société introuvable.');if(String(conf||'').trim()!==c.name)return fail('Confirmation incorrecte : tapez exactement « '+c.name+' ».');
       log(id,'Société supprimée',{nom:c.name});db.members.forEach(m=>{if(m.company_id===id){m.company_id=null;m.active=false}});db.invitations=db.invitations.filter(i=>i.company_id!==id);db.companies=db.companies.filter(x=>x.id!==id);return ok()},
+    getTabs(cid){db.tabs=db.tabs||{co:{},mem:{}};const mem={};db.members.filter(m=>m.company_id===cid).forEach(m=>{if(db.tabs.mem[m.user_id])mem[m.user_id]=db.tabs.mem[m.user_id]});return ok({company:db.tabs.co[cid]||null,members:mem})},
+    setTabs(kind,id,tabs){db.tabs=db.tabs||{co:{},mem:{}};const box=kind==='company'?db.tabs.co:db.tabs.mem;if(tabs)box[id]=tabs;else delete box[id];
+      const m=kind==='member'?db.members.find(x=>x.user_id===id):null;log(kind==='company'?id:(m&&m.company_id),'Onglets modifiés',{email:m&&m.email,onglets:tabs?tabs.length+' / '+ALL_TABS.length:'tous'});return ok()},
     reset(){localStorage.removeItem(K);db=seed();save()}
   };
 }
@@ -393,8 +462,18 @@ async function run(btn,fn,okMsg){
 }
 
 /* ---------- écrans d'accès ---------- */
-const BRAND='<div class="brand"><div class="logo">T</div><div><b>Tadbir — Gestion</b><small>Console admin</small></div></div>';
-function gate(html){$('#root').innerHTML='<div class="gate"><div class="gbox">'+BRAND+html+'</div></div>'}
+const LOGO_SVG='<svg viewBox="0 0 40 40" aria-hidden="true"><path class="hx" d="M20 1.5l16 9.25v18.5L20 38.5 4 29.25v-18.5z" fill="#0e3a4a"/><path d="M12.5 14h15M20 14v13" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/><circle cx="27" cy="25.5" r="2" fill="#22d3ee"/></svg>';
+const BRAND='<div class="brand"><div class="logo" title="Tadbir">'+LOGO_SVG+'</div><div><b>Tadbir — Gestion</b><small>Console admin</small></div></div>';
+const GBRAND='<div class="gbrand">'+LOGO_SVG+'<div><span class="tb-w">Tadbir</span><small aria-label="Console admin">'+'CONSOLE'.split('').map(x=>'<span aria-hidden="true">'+x+'</span>').join('')+'</small></div></div>';
+const LOCK='<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
+const EYE='<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+function gate(html){
+  $('#root').innerHTML='<div class="gate"><div class="gbox">'+GBRAND+html+'</div><div class="gfoot">© '+new Date().getFullYear()+' Tadbir — Gestion · Console d’administration</div></div>';
+  $('#root').querySelectorAll('.gbox input[type=password]').forEach(i=>{
+    const w=document.createElement('span');w.className='pw';i.parentNode.insertBefore(w,i);w.appendChild(i);
+    const b=document.createElement('button');b.type='button';b.className='eye';b.setAttribute('aria-label','Afficher le mot de passe');b.innerHTML=EYE;
+    b.onclick=()=>{const s=i.type==='password';i.type=s?'text':'password';b.setAttribute('aria-pressed',s)};w.appendChild(b)});
+}
 
 function setupView(){
   gate('<h2>Connexion à la base</h2><p>Collez l’adresse et la clé publique (anon) de votre projet Supabase — les mêmes que dans l’application.</p>'
@@ -409,15 +488,15 @@ function setupView(){
   $('#bDemo').onclick=()=>{localStorage.setItem('tadbir_console_mode','demo');start()};
 }
 function loginView(msg,err){
-  gate('<h2>Connexion</h2><p>Réservée au super-administrateur Tadbir.</p>'
-   +'<form id="fL"><div class="field"><label>E-mail</label><input id="lE" type="email" autocomplete="username" required></div>'
-   +'<div class="field"><label>Mot de passe</label><input id="lP" type="password" autocomplete="current-password" required></div>'
-   +'<div class="msg'+(err?' err':'')+'" id="lM">'+E(msg||'')+'</div><button class="btn" type="submit">Se connecter</button></form>'
-   +'<div class="glinks"><a href="#" id="lS">Créer mon compte</a><a href="#" id="lF">Mot de passe oublié ?</a></div>'
+  gate('<h2>Bienvenue</h2><p>Connectez-vous à la console d’administration.</p>'
+   +'<form id="fL"><div class="field"><label for="lE">E-mail</label><input id="lE" type="email" dir="ltr" autocomplete="username" placeholder="nom@societe.ma" required></div>'
+   +'<div class="field"><label for="lP">Mot de passe</label><input id="lP" type="password" dir="ltr" autocomplete="current-password" required></div>'
+   +'<div class="msg'+(err?' err':'')+'" id="lM">'+E(msg||'')+'</div><button class="btn" type="submit">Se connecter</button>'
+   +'<div class="gsec">'+LOCK+'<span>Connexion sécurisée · Données chiffrées</span></div></form>'
+   +'<div class="glinks"><a href="#" id="lF">Mot de passe oublié ?</a></div>'
    +'<div class="glinks"><a href="#" id="lC">Changer de base Supabase</a><a href="#" id="lD">Mode démonstration</a></div>');
   $('#fL').onsubmit=async e=>{e.preventDefault();const m=$('#lM'),b=e.submitter||$('#fL .btn');b.disabled=true;m.className='msg';m.textContent='Connexion…';
     try{ME=await API.login($('#lE').value.trim(),$('#lP').value);await afterLogin()}catch(x){m.className='msg err';m.textContent=x.message}finally{b.disabled=false}};
-  $('#lS').onclick=e=>{e.preventDefault();signupView()};
   $('#lF').onclick=async e=>{e.preventDefault();const em=$('#lE').value.trim(),m=$('#lM');if(!em){m.className='msg err';m.textContent='Saisissez d’abord votre e-mail.';return}
     try{await API.forgot(em);m.className='msg';m.textContent='E-mail de réinitialisation envoyé.'}catch(x){m.className='msg err';m.textContent=x.message}};
   $('#lC').onclick=e=>{e.preventDefault();if(cfg()&&cfg().fixed){toast('La base est fixée dans le fichier (TADBIR_CONFIG).',true);return}localStorage.removeItem('tadbir_console_cfg');setupView()};
@@ -478,7 +557,7 @@ function shell(){
 }
 async function refresh(){
   try{OV=await API.overview()}catch(e){toast(e.message,true);return}
-  if(UI.coId){try{DET=await API.detail(UI.coId)}catch(e){UI.coId=null}}
+  if(UI.coId){try{DET=await loadDet(UI.coId)}catch(e){UI.coId=null}}
   render();
 }
 function render(){
@@ -491,7 +570,8 @@ function render(){
 function head(t,sub,right){return '<div class="head"><div><h1>'+E(t)+'</h1>'+(sub?'<p>'+sub+'</p>':'')+'</div><div class="row">'+(right||'')+'</div></div>'}
 const newBtn='<button class="btn" data-act="new">'+ICON.plus+'Nouvelle société</button>';
 function bindNew(m){m.querySelectorAll('[data-act=new]').forEach(b=>b.onclick=()=>companyForm(null))}
-function openCo(id){UI.coId=id;UI.tab='users';DET=null;API.detail(id).then(d=>{DET=d;render();window.scrollTo(0,0)}).catch(e=>toast(e.message,true))}
+async function loadDet(id){const d=await API.detail(id);try{d.tabs=await API.getTabs(id)||{company:null,members:{}}}catch(e){d.tabs=null;d.tabsErr=e.message}return d}
+function openCo(id){UI.coId=id;UI.tab='users';DET=null;loadDet(id).then(d=>{DET=d;render();window.scrollTo(0,0)}).catch(e=>toast(e.message,true))}
 function bindRows(m){m.querySelectorAll('tr[data-co]').forEach(tr=>tr.onclick=()=>openCo(tr.dataset.co))}
 
 /* ---------- tableau de bord ---------- */
@@ -551,6 +631,7 @@ function renderDetail(m){
    +'<div class="card" style="margin-bottom:16px"><div class="dh"><div><h2>'+E(c.name)+'</h2><div class="row">'+badge(c)+'<span class="pill">'+E(c.plan)+'</span><span class="muted">'+E([c.legal_form,c.city].filter(Boolean).join(' · '))+'</span></div></div>'
    +'<div class="row"><button class="btn sec sm" data-x="m1">+1 mois</button><button class="btn sec sm" data-x="y1">+1 an</button>'
    +(c.status==='suspended'?'<button class="btn acc sm" data-x="on">Réactiver l’accès</button>':'<button class="btn danger sm" data-x="off">Suspendre</button>')
+   +'<button class="btn sec sm tbtn" data-x="tabs">'+ICON.tabs+'Onglets <i>'+tabCount(coTabs())+'</i></button>'
    +'<button class="btn sm" data-x="edit">Modifier</button></div></div>'
    +(s.k==='exp'?'<div style="padding:0 22px 16px"><div class="alert err">L’abonnement a expiré le '+fd(c.expires_at)+' : les utilisateurs de cette société ne peuvent plus se connecter. Prolongez l’abonnement pour rétablir l’accès.</div></div>':'')
    +(s.k==='sus'?'<div style="padding:0 22px 16px"><div class="alert warn">Accès suspendu : les utilisateurs voient un écran « Accès suspendu ». Leurs données sont conservées.</div></div>':'')
@@ -566,6 +647,7 @@ function renderDetail(m){
   if(on)on.onclick=e=>run(e.currentTarget,()=>API.setStatus(c.id,'active'),'Accès réactivé.').then(re);
   if(off)off.onclick=()=>confirmBox('Suspendre '+c.name+' ?','Tous les utilisateurs de cette société seront bloqués immédiatement. Les données sont conservées et l’accès peut être réactivé à tout moment.','Suspendre',()=>API.setStatus(c.id,'suspended').then(()=>{toast('Accès suspendu.');return re()}));
   m.querySelector('[data-x=edit]').onclick=()=>companyForm(c);
+  m.querySelector('[data-x=tabs]').onclick=()=>companyTabsBox(c);
   const tb=$('#tabb');
   if(UI.tab==='users')renderUsers(tb,c,mem,inv,actN);
   else if(UI.tab==='info')renderInfo(tb,c);
@@ -583,9 +665,9 @@ function renderUsers(tb,c,mem,inv,actN){
    +'<div class="field" style="min-width:150px"><label>Rôle</label>'+roleSel(mem.length||inv.length?'Employé':'Administrateur','',false).replace('class="sel "','id="iR" class="sel" style="padding:9px"')+'</div>'
    +'<button class="btn" type="submit">Inviter</button></form>'
    +'<div class="alert info" style="margin-bottom:16px">La personne invitée ouvre l’application, clique sur « Créer un compte employé » avec <b>cette adresse e-mail</b> : elle est rattachée automatiquement à '+E(c.name)+'.</div></div>'
-   +(mem.length?'<div class="tw"><table><thead><tr><th>Nom</th><th>E-mail</th><th>Rôle</th><th>Accès</th><th class="hide-m">Dernière connexion</th><th></th></tr></thead><tbody>'
+   +(mem.length?'<div class="tw"><table><thead><tr><th>Nom</th><th>E-mail</th><th>Rôle</th><th>Accès</th><th>Onglets</th><th class="hide-m hide-l">Dernière connexion</th><th></th></tr></thead><tbody>'
      +mem.map(u=>'<tr data-u="'+E(u.user_id)+'"><td><input class="inline-in u-n" value="'+E(u.full_name)+'"></td><td>'+E(u.email)+'</td><td>'+roleSel(u.role,'u-r')+'</td>'
-       +'<td><label class="tog"><input type="checkbox" class="u-a"'+(u.active?' checked':'')+'><span>'+(u.active?'Actif':'Inactif')+'</span></label></td><td class="hide-m muted">'+ago(u.last_seen_at)+'</td>'
+       +'<td><label class="tog"><input type="checkbox" class="u-a"'+(u.active?' checked':'')+'><span>'+(u.active?'Actif':'Inactif')+'</span></label></td><td><button class="btn sec sm tbtn u-t" title="Choisir les onglets de cet utilisateur">'+ICON.tabs+'<i>'+memTabLabel(u.user_id)+'</i></button></td><td class="hide-m hide-l muted">'+ago(u.last_seen_at)+'</td>'
        +'<td><div class="row" style="flex-wrap:nowrap"><button class="btn sec sm u-s">Enregistrer</button><button class="btn danger sm u-x" title="Retirer de la société">Retirer</button></div></td></tr>').join('')+'</tbody></table></div>'
      :'<div class="empty"><b>Aucun utilisateur inscrit</b>Les invités apparaîtront ici dès qu’ils auront créé leur compte.</div>')
    +(inv.length?'<div class="card-h" style="border-top:1px solid var(--line)"><h3>Invitations en attente</h3><small>'+inv.length+' — pas encore inscrites</small></div><div class="tw"><table><tbody>'
@@ -596,6 +678,7 @@ function renderUsers(tb,c,mem,inv,actN){
       toast({invite:'Invitation enregistrée.',rattache:'Compte existant rattaché et activé.',rattache_inactif:'Compte rattaché — inactif : plus de place disponible.',deja_actif:'Cette personne est déjà active dans la société.'}[r]||'Fait.');re()}).catch(()=>{})};
   tb.querySelectorAll('tr[data-u]').forEach(tr=>{
     const u=mem.find(x=>x.user_id===tr.dataset.u);
+    tr.querySelector('.u-t').onclick=()=>memberTabsBox(c,u);
     tr.querySelector('.u-a').onchange=ev=>{ev.target.nextElementSibling.textContent=ev.target.checked?'Actif':'Inactif'};
     tr.querySelector('.u-s').onclick=ev=>run(ev.currentTarget,()=>API.setMember(u.user_id,c.id,tr.querySelector('.u-r').value,tr.querySelector('.u-a').checked,tr.querySelector('.u-n').value.trim()),'Utilisateur enregistré.').then(re).catch(()=>{});
     tr.querySelector('.u-x').onclick=()=>confirmBox('Retirer '+(u.full_name||u.email)+' ?','Son compte n’aura plus accès à '+c.name+'. Il apparaîtra dans « Comptes à rattacher ». Les données de la société ne sont pas touchées.','Retirer',()=>API.setMember(u.user_id,null,u.role,false,null).then(()=>{toast('Utilisateur retiré.');return re()}));
@@ -637,7 +720,7 @@ function renderPend(m){
 /* ---------- journal ---------- */
 function logList(l){
   if(!l.length)return '<div class="empty" style="padding:16px">Aucune action pour le moment.</div>';
-  const det=d=>{if(!d)return '';const p=[];if(d.email)p.push(d.email);if(d.role)p.push(d.role);if(d.formule)p.push(d.formule);if(d.max)p.push(d.max+' util. max');if(d.nouvelle_fin)p.push('fin : '+fd(d.nouvelle_fin));else if(d.expire)p.push('fin : '+fd(d.expire));if(d.actif!=null)p.push(d.actif?'actif':'inactif');return p.join(' · ')};
+  const det=d=>{if(!d)return '';const p=[];if(d.email)p.push(d.email);if(d.role)p.push(d.role);if(d.formule)p.push(d.formule);if(d.max)p.push(d.max+' util. max');if(d.nouvelle_fin)p.push('fin : '+fd(d.nouvelle_fin));else if(d.expire)p.push('fin : '+fd(d.expire));if(d.actif!=null)p.push(d.actif?'actif':'inactif');if(d.onglets)p.push('onglets : '+d.onglets);return p.join(' · ')};
   return '<div class="log">'+l.map(x=>'<div><time>'+fdt(x.at)+'</time><span><b>'+E(x.action)+'</b>'+(x.company_name?' — '+E(x.company_name):'')+'<br><small>'+E(det(x.detail))+(x.actor_email?' · par '+E(x.actor_email):'')+'</small></span></div>').join('')+'</div>';
 }
 function renderLog(m){m.innerHTML=head('Journal','Toutes les actions faites depuis la console et par les administrateurs des sociétés.')+'<div class="card"><div class="card-b">'+logList(OV.log)+'</div></div>'}
@@ -650,8 +733,9 @@ function renderSetup(m){
    +'<div class="card"><div class="card-b"><ol class="steps">'
    +'<li><div><b>Créer le projet Supabase</b>Sur supabase.com, créez un projet (région Europe — Frankfurt ou Paris).</div></li>'
    +'<li><div><b>Préparer la base</b>Supabase › SQL Editor › New query : collez tout le fichier <code>Tadbir_Supabase_MultiSocietes.sql</code> puis « Run ».</div></li>'
+   +'<li><div><b>Activer les onglets par société et par utilisateur</b>Dans le SQL Editor, exécutez aussi le fichier <code>Tadbir_Onglets.sql</code> (une seule fois). Il ajoute le réglage « Onglets » utilisé par la console et l’application.</div></li>'
    +'<li><div><b>Relier la console et l’application</b>Supabase › Project Settings › API : copiez « Project URL » et la clé « anon public ». Collez-les dans cette console (écran de connexion) et dans l’application, en haut du fichier : <code>BSM_CLOUD_CONFIG={url:"…",anonKey:"…"}</code>.</div></li>'
-   +'<li><div><b>Devenir super-administrateur</b>Créez votre compte depuis cette console (« Créer mon compte »), puis exécutez une fois la commande affichée à l’écran dans le SQL Editor.</div></li>'
+   +'<li><div><b>Devenir super-administrateur</b>Créez votre compte dans Supabase › Authentication › Users (« Add user »), connectez-vous à cette console, puis exécutez une fois la commande affichée à l’écran dans le SQL Editor.</div></li>'
    +'<li><div><b>Créer une société cliente</b>« Nouvelle société » : identité, formule, date de fin, nombre maximum d’utilisateurs, et les e-mails des personnes à inviter.</div></li>'
    +'<li><div><b>Les employés s’inscrivent</b>Chacun ouvre l’application et clique « Créer un compte employé » avec l’e-mail invité : il entre directement dans sa société.</div></li>'
    +'</ol></div></div>'
@@ -687,6 +771,57 @@ function deleteBox(c){
   o.querySelector('[data-c]').onclick=close;
   b.onclick=()=>run(b,()=>API.deleteCompany(c.id,i.value),'Société supprimée.').then(()=>{close();UI.coId=null;DET=null;UI.page='cos';refresh()}).catch(()=>{});
   i.focus();
+}
+
+/* ---------- onglets (société / utilisateur) ---------- */
+function coTabs(){return DET&&DET.tabs?DET.tabs.company:null}
+function memTabs(uid){return DET&&DET.tabs&&DET.tabs.members?DET.tabs.members[uid]||null:null}
+function tabCount(list){return (list?list.filter(t=>ALL_TABS.includes(t)).length:ALL_TABS.length)+' / '+ALL_TABS.length}
+function memTabLabel(uid){const own=memTabs(uid);if(!own)return 'Société';const co=coTabs()||ALL_TABS;return own.filter(t=>co.includes(t)).length+' / '+co.length}
+function tabsReady(){if(DET&&DET.tabs)return true;
+  toast(API.demo?'Onglets indisponibles.':'Exécutez d’abord le script Tadbir_Onglets.sql dans Supabase › SQL Editor (voir « Installation »).',true);return false}
+function companyTabsBox(c){if(!tabsReady())return;
+  tabsBox({title:'Onglets — '+c.name,sub:'Onglets visibles pour <b>tous les utilisateurs</b> de cette société. Un onglet retiré ici disparaît pour tout le monde.',
+    universe:ALL_TABS,cur:coTabs(),resetLabel:'Tout afficher',
+    save:list=>API.setTabs('company',c.id,list),okMsg:'Onglets de la société enregistrés.'})}
+function memberTabsBox(c,u){if(!tabsReady())return;
+  const uni=(coTabs()||ALL_TABS).filter(t=>ALL_TABS.includes(t));
+  tabsBox({title:'Onglets — '+(u.full_name||u.email),sub:'Onglets visibles pour <b>'+E(u.email)+'</b>. Seuls les onglets ouverts pour '+E(c.name)+' peuvent être ajoutés.',
+    universe:uni,cur:memTabs(u.user_id),resetLabel:'Reprendre les onglets de la société',
+    save:list=>API.setTabs('member',u.user_id,list),okMsg:'Onglets de l’utilisateur enregistrés.'})}
+function tabsBox(o){
+  const uni=o.universe.slice();LOCKED_TABS.forEach(t=>{if(!uni.includes(t))uni.unshift(t)});
+  let sel=new Set((o.cur||uni).filter(t=>uni.includes(t)));LOCKED_TABS.forEach(t=>sel.add(t));
+  let addOpen=false;
+  const groups=()=>TAB_GROUPS.map(g=>[g[0],g[1].filter(t=>uni.includes(t[0]))]).filter(g=>g[1].length);
+  const {o:ov,close}=modal(o.title,'<div id="tbx"></div>','<button type="button" class="lnk" data-reset>'+E(o.resetLabel)+'</button><button class="btn sec" data-c>Annuler</button><button class="btn" data-ok>Enregistrer</button>','md');
+  const box=ov.querySelector('#tbx');
+  function draw(){
+    const shown=groups().map(g=>{const on=g[1].filter(t=>sel.has(t[0]));
+      return '<div class="tg"><div class="tg-h">'+E(g[0])+' <small>'+on.length+' / '+g[1].length+'</small>'+(on.some(t=>!LOCKED_TABS.includes(t[0]))?'<button type="button" data-gx="'+E(g[0])+'">Tout retirer</button>':'')+'</div><div class="tg-c">'
+        +(on.length?on.map(t=>LOCKED_TABS.includes(t[0])?'<span class="tchip lock" title="Toujours affiché">'+E(t[1])+'</span>':'<span class="tchip">'+E(t[1])+'<button type="button" data-x="'+t[0]+'" aria-label="Retirer '+E(t[1])+'" title="Retirer">×</button></span>').join(''):'<span class="tg-empty">Aucun onglet de ce groupe.</span>')+'</div></div>'}).join('');
+    const hid=groups().map(g=>[g[0],g[1].filter(t=>!sel.has(t[0]))]).filter(g=>g[1].length);
+    const nHid=hid.reduce((a,g)=>a+g[1].length,0);
+    box.innerHTML='<p class="muted" style="margin:0 0 12px;font-size:13px">'+o.sub+'</p>'
+      +'<div class="tsum"><b>'+sel.size+' / '+uni.length+'</b><span class="muted">onglets affichés</span><span class="spacer"></span>'
+      +'<button type="button" class="btn sec sm" data-add'+(nHid?'':' disabled')+'>'+ICON.plus+(addOpen?'Fermer l’ajout':'Ajouter un onglet'+(nHid?' ('+nHid+')':''))+'</button></div>'
+      +(addOpen&&nHid?'<div class="addp" style="margin-bottom:12px"><div class="row" style="margin-bottom:8px"><b style="font-size:13px">Onglets masqués</b><span class="spacer"></span><button type="button" class="btn sec sm" data-all>Tout ajouter</button></div>'
+        +hid.map(g=>'<div class="tg"><div class="tg-h">'+E(g[0])+'</div><div class="tg-c">'+g[1].map(t=>'<button type="button" class="tadd" data-a="'+t[0]+'">+ '+E(t[1])+'</button>').join('')+'</div></div>').join('')+'</div>':'')
+      +shown;
+    box.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{sel.delete(b.dataset.x);draw()});
+    box.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{sel.add(b.dataset.a);if(!groups().some(g=>g[1].some(t=>!sel.has(t[0]))))addOpen=false;draw()});
+    box.querySelectorAll('[data-gx]').forEach(b=>b.onclick=()=>{const g=groups().find(x=>x[0]===b.dataset.gx);g[1].forEach(t=>{if(!LOCKED_TABS.includes(t[0]))sel.delete(t[0])});draw()});
+    const ad=box.querySelector('[data-add]');if(ad)ad.onclick=()=>{addOpen=!addOpen;draw()};
+    const al=box.querySelector('[data-all]');if(al)al.onclick=()=>{uni.forEach(t=>sel.add(t));addOpen=false;draw()};
+  }
+  draw();
+  ov.querySelector('[data-c]').onclick=close;
+  ov.querySelector('[data-reset]').onclick=()=>{uni.forEach(t=>sel.add(t));addOpen=false;draw()};
+  ov.querySelector('[data-ok]').onclick=e=>{
+    const list=ALL_TABS.filter(t=>sel.has(t));
+    const full=uni.every(t=>sel.has(t));
+    run(e.currentTarget,()=>o.save(full?null:list),o.okMsg).then(()=>{close();return refresh()}).catch(()=>{});
+  };
 }
 
 function companyForm(c){
