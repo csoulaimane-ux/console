@@ -213,6 +213,36 @@ code,.code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font
 .tbtn{display:inline-flex;align-items:center;gap:6px}
 .tbtn i{font-style:normal;font-size:11px;font-weight:700;background:var(--blue2);color:#155e75;border-radius:999px;padding:1px 7px}
 
+/* inventaire */
+tfoot td{font-weight:700;background:#f8fafc;border-top:2px solid var(--line);border-bottom:0}
+.b-paid{background:var(--grn2);color:var(--grn)}
+.b-part{background:var(--amb2);color:var(--amb)}
+.b-unpaid{background:var(--red2);color:var(--red)}
+.b-free{background:#f1f5f9;color:#475569}
+.sumg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:16px}
+.sumt th,.sumt td{padding:9px 14px}
+.sumt td.num,.sumt th.num,.invt td.num,.invt th.num{text-align:end}
+.rec{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.rec .stat b{font-size:19px}
+.rec .stat small{display:block;color:var(--mut);font-size:12px;margin-top:2px}
+.rbar{height:8px;background:#e2e8f0;border-radius:9px;overflow:hidden;margin-top:8px}
+.rbar i{display:block;height:100%;background:var(--grn)}
+.invt td.nm{min-width:170px}
+.ph{display:none}
+@media (max-width:1100px){.sumg{grid-template-columns:1fr}.rec{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media print{
+  @page{size:A4 landscape;margin:10mm}
+  body,html{background:#fff}
+  .side,.toolbar,.noprint,.toast,.head .row{display:none!important}
+  .shell{display:block}.main{padding:0}
+  .card{box-shadow:none;break-inside:avoid}
+  .kpis{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+  .sumg{grid-template-columns:1fr 1fr}
+  .ph{display:block;margin-bottom:8px;color:var(--mut);font-size:12px}
+  td,th{padding:6px 8px;font-size:11px}
+  .hide-m{display:table-cell!important}
+}
+
 /* modal + toast */
 .ov{position:fixed;inset:0;background:rgba(15,23,42,.5);display:flex;align-items:flex-start;justify-content:center;padding:5vh 16px;z-index:50;overflow-y:auto}
 .modal{background:#fff;border-radius:16px;width:min(760px,100%);box-shadow:0 30px 70px -20px rgba(0,0,0,.45)}
@@ -327,6 +357,9 @@ const ICON={
   wa:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21"/><path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1"/></svg>',
   mail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
   copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>',
+  inv:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6a1 1 0 0 1 1 1v1H8V5a1 1 0 0 1 1-1z"/><path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/><path d="M8 12h8M8 16h5"/></svg>',
+  dl:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg>',
+  print:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/></svg>',
   plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
   search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>'
 };
@@ -401,7 +434,9 @@ function SupabaseAPI(c){
     async getSettings(cid){const r=await rpc('admin_get_settings',{p_company:cid})||{};const P=v=>{try{return v?JSON.parse(v):null}catch(e){return null}};return {company:P(r.company),tax:P(r.tax)}},
     setSettings:(cid,kind,obj)=>rpc('admin_set_settings',{p_company:cid,p_key:kind==='tax'?'__taxSettings':'nlc_company_v65',p_value:JSON.stringify(obj)}),
     reminders:()=>rpc('admin_reminders'),
-    addReminder:(cid,channel,tone)=>rpc('admin_add_reminder',{p_company:cid,p_channel:channel,p_tone:tone})
+    addReminder:(cid,channel,tone)=>rpc('admin_add_reminder',{p_company:cid,p_channel:channel,p_tone:tone}),
+    payments:()=>rpc('admin_payments'),
+    setPayment:(cid,p)=>rpc('admin_set_payment',{p_company:cid,p:p||null})
   };
 }
 
@@ -422,6 +457,7 @@ function DemoAPI(){
       invitations:[{id:uid(),company_id:c2.id,email:'stock@atlaslift.ma',full_name:'Magasinier Atlas',role:'Employé',created_at:now}],
       stats:{[c1.id]:{invoices:412,bls:274,clients:88,products:640,purchases:57},[c2.id]:{invoices:6,clients:4,products:31},[c3.id]:{invoices:120,bls:96,clients:40,products:210}},
       activity:{[c1.id]:h(1),[c2.id]:h(50),[c3.id]:h(400)},
+      pay:{[c1.id]:{amount:12000,paid_at:addPeriod(t,-3),method:'Virement',ref:'VIR-0425',note:'',period_end:c1.expires_at},[c3.id]:{amount:450,paid_at:addPeriod(t,-1),method:'Espèces',ref:'',note:'Reste 450 MAD',period_end:c3.expires_at}},
       log:[{id:1,at:now,actor_email:'vous (démo)',company_id:c2.id,company_name:c2.name,action:'Société créée',detail:{formule:'Essai'}}]};
   }
   let db;try{db=JSON.parse(localStorage.getItem(K)||'null')}catch(e){}
@@ -476,6 +512,9 @@ function DemoAPI(){
     setSettings(cid,kind,obj){db.settings=db.settings||{};const x=db.settings[cid]=db.settings[cid]||{};x[kind]=JSON.parse(JSON.stringify(obj));log(cid,kind==='tax'?'Attestation fiscale modifiée':'Paramètres de la société modifiés');return ok()},
     reminders(){db.reminders=db.reminders||[];const out={},lim=Date.now()-30*864e5;db.reminders.forEach(r=>{const o=out[r.company_id]=out[r.company_id]||{last_at:null,channel:null,tone:null,count30:0,total:0};o.total++;if(new Date(r.at).getTime()>=lim)o.count30++;if(!o.last_at||r.at>o.last_at){o.last_at=r.at;o.channel=r.channel;o.tone=r.tone}});return ok(out)},
     addReminder(cid,channel,tone){db.reminders=db.reminders||[];db.reminders.push({company_id:cid,channel,tone,at:new Date().toISOString()});log(cid,'Relance envoyée',{canal:channel});return ok()},
+    payments(){db.pay=db.pay||{};return ok(JSON.parse(JSON.stringify(db.pay)))},
+    setPayment(cid,p){db.pay=db.pay||{};if(p)db.pay[cid]=Object.assign({},p,{updated_at:new Date().toISOString()});else delete db.pay[cid];
+      log(cid,p?'Paiement enregistré':'Paiement annulé',p?{montant:p.amount,mode:p.method}:null);return ok()},
     reset(){localStorage.removeItem(K);db=seed();save()}
   };
 }
@@ -580,6 +619,7 @@ function shell(){
    +'<nav class="nav" id="nav">'
    +'<button data-p="dash">'+ICON.dash+'<span>Tableau de bord</span></button>'
    +'<button data-p="cos">'+ICON.co+'<span>Sociétés</span></button>'
+   +'<button data-p="inv">'+ICON.inv+'<span>Inventaire</span><i class="cnt hide" id="cntI" title="Non payées / partielles"></i></button>'
    +'<button data-p="rel">'+ICON.bell+'<span>Relances</span><i class="cnt hide" id="cntR"></i></button>'
    +'<button data-p="pend">'+ICON.user+'<span>Comptes à rattacher</span><i class="cnt hide" id="cntP"></i></button>'
    +'<button data-p="log">'+ICON.log+'<span>Journal</span></button>'
@@ -591,6 +631,7 @@ function shell(){
 }
 async function refresh(){
   try{OV=await API.overview()}catch(e){toast(e.message,true);return}
+  await loadPay();
   if(UI.coId){try{DET=await loadDet(UI.coId)}catch(e){UI.coId=null}}
   render();
 }
@@ -598,9 +639,10 @@ function render(){
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.p===UI.page));
   const n=(OV&&OV.unassigned||[]).length,cp=$('#cntP');if(cp){cp.textContent=n;cp.classList.toggle('hide',!n)}
   const nr=OV?toRelance().length:0,cr=$('#cntR');if(cr){cr.textContent=nr;cr.classList.toggle('hide',!nr)}
+  const ni=OV?OV.companies.filter(c=>['unpaid','part'].includes(payOf(c).k)).length:0,ci=$('#cntI');if(ci){ci.textContent=ni;ci.classList.toggle('hide',!ni)}
   const m=$('#main');if(!m||!OV)return;
   if(UI.coId&&DET)return renderDetail(m);
-  ({dash:renderDash,cos:renderCos,rel:renderRel,pend:renderPend,log:renderLog,setup:renderSetup}[UI.page]||renderDash)(m);
+  ({dash:renderDash,cos:renderCos,inv:renderInv,rel:renderRel,pend:renderPend,log:renderLog,setup:renderSetup}[UI.page]||renderDash)(m);
 }
 function head(t,sub,right){return '<div class="head"><div><h1>'+E(t)+'</h1>'+(sub?'<p>'+sub+'</p>':'')+'</div><div class="row">'+(right||'')+'</div></div>'}
 const newBtn='<button class="btn" data-act="new">'+ICON.plus+'Nouvelle société</button>';
@@ -866,6 +908,184 @@ function relanceBox(c,r){
   g('[data-cp]').onclick=async()=>{try{await navigator.clipboard.writeText(g('#rM').value)}catch(e){const t=g('#rM');t.select();document.execCommand('copy')}mark('Copie');toast('Message copié — relance enregistrée.');close()};
 }
 
+/* ---------- inventaire des sociétés et paiements ---------- */
+const PAY_LS='tadbir_console_pay';
+const PAY_METHODS=['Virement','Espèces','Chèque','Carte bancaire','Effet','Autre'];
+const PAY_ST={paid:'Payé',part:'Partiel',unpaid:'Non payé',free:'Gratuit / essai'};
+const TVA=0.20;
+function payLocal(){try{return JSON.parse(localStorage.getItem(PAY_LS)||'{}')||{}}catch(e){return {}}}
+function payLocalSet(cid,p){const x=payLocal();if(p)x[cid]=Object.assign({},p,{updated_at:new Date().toISOString()});else delete x[cid];try{localStorage.setItem(PAY_LS,JSON.stringify(x))}catch(e){}}
+async function loadPay(){
+  try{UI.pay=await API.payments()||{};UI.payErr=null}
+  catch(e){UI.pay=payLocal();UI.payErr=e.message||String(e)}
+}
+async function savePay(cid,p){
+  if(UI.payErr){payLocalSet(cid,p);UI.pay=payLocal();return}
+  await API.setPayment(cid,p);
+}
+function payOf(c){
+  const rec=(UI.pay||{})[c.id]||null,amount=Number(c.price_mad)||0,paid=rec?Number(rec.amount)||0:0,rest=Math.max(0,amount-paid);
+  let k;if(amount<=0&&paid<=0)k='free';else if(paid>=amount)k='paid';else if(paid>0)k='part';else k='unpaid';
+  return {rec,amount,paid,rest,k,t:PAY_ST[k]};
+}
+function payBadge(p){return '<span class="badge b-'+p.k+'">'+E(p.t)+'</span>'}
+function totals(list){
+  const t={n:list.length,amount:0,paid:0,rest:0,paidN:0,partN:0,unpaidN:0,freeN:0};
+  list.forEach(c=>{const p=payOf(c);t.amount+=p.amount;t.paid+=Math.min(p.paid,p.amount||p.paid);t.rest+=p.rest;t[p.k+'N']++});
+  return t;
+}
+function pct(a,b){return b>0?Math.round(100*a/b):0}
+function stName(k){return {ok:'Active',soon:'Expire bientôt',exp:'Expirée',sus:'Suspendue'}[k]||k}
+
+function renderInv(m){
+  const all=OV.companies,f=UI.ipf||'all',fe=UI.ief||'all',q=(UI.iq||'').trim().toLowerCase(),so=UI.isort||'name';
+  const list=all.filter(c=>{const p=payOf(c);
+    if(f!=='all'&&p.k!==f)return false;
+    if(fe!=='all'&&cState(c).k!==fe)return false;
+    if(q&&!(c.name+' '+(c.city||'')+' '+(c.ice||'')+' '+(c.contact||'')+' '+(p.rec&&p.rec.ref||'')).toLowerCase().includes(q))return false;return true});
+  const sorters={name:(a,b)=>a.name.localeCompare(b.name),end:(a,b)=>String(a.expires_at||'9999').localeCompare(String(b.expires_at||'9999')),
+    start:(a,b)=>String(a.starts_at||'').localeCompare(String(b.starts_at||'')),amount:(a,b)=>payOf(b).amount-payOf(a).amount,rest:(a,b)=>payOf(b).rest-payOf(a).rest};
+  list.sort(sorters[so]||sorters.name);
+  const T=totals(all),L=totals(list);
+  const act=all.filter(c=>['ok','soon'].includes(cState(c).k));
+  const mrr=act.reduce((a,c)=>a+monthly(c),0);
+  const cnt=k=>all.filter(c=>payOf(c).k===k).length;
+  const chip=(k,t)=>'<button class="chip'+(f===k?' on':'')+'" data-pf="'+k+'">'+t+'</button>';
+  const opt=(v,t,cur)=>'<option value="'+v+'"'+(cur===v?' selected':'')+'>'+t+'</option>';
+  const rate=pct(T.paid,T.amount);
+
+  const row=(c,i)=>{const p=payOf(c),s=cState(c),r=p.rec;
+    const dLine=s.d==null?'':s.d<0?'expirée depuis '+(-s.d)+' j':s.d===0?'aujourd’hui':'dans '+s.d+' j';
+    const per=r&&r.period_end&&c.expires_at&&r.period_end!==c.expires_at?'<div style="font-size:12px;color:var(--amb)">payé pour la fin au '+fd(r.period_end)+'</div>':'';
+    return '<tr data-iv="'+E(c.id)+'"><td class="muted num">'+(i+1)+'</td>'
+     +'<td class="nm"><b>'+E(c.name)+'</b><small>'+E([c.legal_form,c.city].filter(Boolean).join(' · '))+'</small></td>'
+     +'<td class="hide-m"><span class="pill">'+E(c.plan)+'</span></td>'
+     +'<td class="num hide-m">'+fd(c.starts_at)+'</td>'
+     +'<td class="num">'+fd(c.expires_at)+(dLine?'<div class="muted" style="font-size:12px">'+dLine+'</div>':'')+'</td>'
+     +'<td>'+badge(c)+'</td>'
+     +'<td class="num">'+(p.amount?money(p.amount):'—')+'</td>'
+     +'<td class="num" style="color:var(--grn)">'+(p.paid?money(p.paid):'—')+'</td>'
+     +'<td class="num" style="color:'+(p.rest?'var(--red)':'inherit')+'">'+(p.rest?money(p.rest):'—')+'</td>'
+     +'<td>'+payBadge(p)+(r&&r.paid_at?'<div class="muted" style="font-size:12px;margin-top:3px">'+fd(r.paid_at)+(r.method?' · '+E(r.method):'')+(r.ref?' · '+E(r.ref):'')+'</div>':'')+per+'</td>'
+     +'<td class="noprint" style="text-align:end"><div class="row" style="justify-content:flex-end;flex-wrap:nowrap">'
+       +(p.k==='paid'||p.k==='free'?'<button class="btn sec sm iv-pay">'+(p.k==='paid'?'Modifier':'Saisir')+'</button>':'<button class="btn sm iv-pay">Encaisser</button>')
+       +'<button class="btn sec sm iv-open" title="Ouvrir la fiche">Fiche</button></div></td></tr>'};
+
+  /* tableaux récapitulatifs */
+  const sumTable=(title,sub,rows)=>'<div class="card"><div class="card-h"><h3>'+E(title)+'</h3><small>'+E(sub)+'</small></div><div class="tw"><table class="sumt"><thead><tr><th></th><th class="num">Nb</th><th class="num">Montant</th><th class="num">Encaissé</th><th class="num">Reste</th></tr></thead><tbody>'
+    +rows.filter(r=>r[1].n).map(r=>'<tr><td>'+r[0]+'</td><td class="num">'+r[1].n+'</td><td class="num">'+money(r[1].amount)+'</td><td class="num" style="color:var(--grn)">'+money(r[1].paid)+'</td><td class="num" style="color:'+(r[1].rest?'var(--red)':'inherit')+'">'+money(r[1].rest)+'</td></tr>').join('')
+    +'</tbody><tfoot><tr><td>Total</td><td class="num">'+T.n+'</td><td class="num">'+money(T.amount)+'</td><td class="num">'+money(T.paid)+'</td><td class="num">'+money(T.rest)+'</td></tr></tfoot></table></div></div>';
+  const by=fn=>{const g={};all.forEach(c=>{const k=fn(c);(g[k]=g[k]||[]).push(c)});return g};
+  const gPay=by(c=>payOf(c).k),gPlan=by(c=>c.plan||'—'),gSt=by(c=>cState(c).k);
+  const byPay=['paid','part','unpaid','free'].map(k=>['<span class="badge b-'+k+'">'+PAY_ST[k]+'</span>',totals(gPay[k]||[])]);
+  const byPlan=Object.keys(gPlan).sort().map(k=>['<span class="pill">'+E(k)+'</span>',totals(gPlan[k])]);
+  const bySt=['ok','soon','exp','sus'].map(k=>['<span class="badge b-'+k+'">'+stName(k)+'</span>',totals(gSt[k]||[])]);
+  const meth={};all.forEach(c=>{const p=payOf(c);if(p.rec&&p.paid>0){const k=p.rec.method||'Non précisé';meth[k]=meth[k]||{n:0,v:0};meth[k].n++;meth[k].v+=p.paid}});
+  const mKeys=Object.keys(meth).sort((a,b)=>meth[b].v-meth[a].v);
+  const due30=all.filter(c=>{const s=cState(c);return c.status!=='suspended'&&s.d!=null&&s.d>=0&&s.d<=30&&payOf(c).amount>0});
+  const due30v=due30.reduce((a,c)=>a+payOf(c).amount,0);
+  const late=all.filter(c=>cState(c).k==='exp'&&payOf(c).rest>0),lateV=late.reduce((a,c)=>a+payOf(c).rest,0);
+  const payN=T.n-T.freeN;
+
+  m.innerHTML=head('Inventaire des sociétés','Liste complète des abonnements avec dates, montants et statut de paiement.',
+      '<button class="btn sec" id="ivCsv">'+ICON.dl+'Exporter (Excel)</button><button class="btn sec" id="ivPrint">'+ICON.print+'Imprimer</button>'+newBtn)
+   +'<div class="ph">Tadbir — Inventaire des sociétés · édité le '+fd(todayStr())+(f!=='all'||fe!=='all'||q?' · liste filtrée':'')+'</div>'
+   +(UI.payErr?'<div class="alert warn" style="margin-bottom:14px">Les paiements sont enregistrés <b>sur cet appareil uniquement</b> : la base n’a pas encore la table des paiements. Exécutez <b>Tadbir_Inventaire.sql</b> dans Supabase › SQL Editor (voir « Installation ») pour les retrouver partout.</div>':'')
+   +'<div class="kpis">'
+   +'<div class="card kpi"><span>Sociétés</span><b>'+T.n+'</b><small>'+act.length+' active(s) · '+(T.n-act.length)+' bloquée(s)</small></div>'
+   +'<div class="card kpi"><span>Montant total</span><b>'+money(T.amount)+'</b><small>MAD HT · '+money(T.amount*(1+TVA))+' TTC</small></div>'
+   +'<div class="card kpi"><span>Encaissé</span><b style="color:var(--grn)">'+money(T.paid)+'</b><small>'+rate+' % · '+T.paidN+' payée(s), '+T.partN+' partielle(s)</small></div>'
+   +'<div class="card kpi"><span>Reste à encaisser</span><b style="color:'+(T.rest?'var(--red)':'inherit')+'">'+money(T.rest)+'</b><small>'+(T.unpaidN+T.partN)+' société(s) concernée(s)</small></div>'
+   +'<div class="card kpi"><span>Revenu mensuel</span><b>'+money(mrr)+'</b><small>MAD HT · '+money(mrr*12)+' / an</small></div></div>'
+   +'<div class="card"><div class="toolbar"><div class="search">'+ICON.search+'<input id="iq" placeholder="Rechercher : nom, ville, ICE, contact, référence…" value="'+E(UI.iq||'')+'"></div>'
+   +'<div class="chips">'+chip('all','Toutes ('+T.n+')')+chip('paid','Payées ('+cnt('paid')+')')+chip('part','Partielles ('+cnt('part')+')')+chip('unpaid','Non payées ('+cnt('unpaid')+')')+chip('free','Gratuites ('+cnt('free')+')')+'</div>'
+   +'<select class="sel" id="ief" title="État de l’abonnement">'+opt('all','Tous les états',fe)+opt('ok','Actives',fe)+opt('soon','Expirent bientôt',fe)+opt('exp','Expirées',fe)+opt('sus','Suspendues',fe)+'</select>'
+   +'<select class="sel" id="isort" title="Trier">'+opt('name','Tri : nom',so)+opt('end','Tri : date de fin',so)+opt('start','Tri : date de début',so)+opt('amount','Tri : montant',so)+opt('rest','Tri : reste à payer',so)+'</select></div>'
+   +(list.length?'<div class="tw"><table class="invt"><thead><tr><th>N°</th><th>Société</th><th class="hide-m">Formule</th><th class="hide-m">Début</th><th>Fin</th><th>État</th><th class="num">Montant HT</th><th class="num">Payé</th><th class="num">Reste</th><th>Paiement</th><th class="noprint"></th></tr></thead><tbody>'
+     +list.map(row).join('')+'</tbody><tfoot>'
+     +'<tr><td></td><td>Total — '+L.n+' société'+(L.n>1?'s':'')+(L.n!==T.n?' affichée'+(L.n>1?'s':''):'')+'</td><td class="hide-m"></td><td class="hide-m"></td><td></td><td></td><td class="num">'+money(L.amount)+'</td><td class="num" style="color:var(--grn)">'+money(L.paid)+'</td><td class="num" style="color:'+(L.rest?'var(--red)':'inherit')+'">'+money(L.rest)+'</td><td>'+pct(L.paid,L.amount)+' % encaissé</td><td class="noprint"></td></tr>'
+     +'<tr><td></td><td class="muted" style="font-weight:600">TVA '+Math.round(TVA*100)+' % · Total TTC</td><td class="hide-m"></td><td class="hide-m"></td><td></td><td></td><td class="num">'+money(L.amount*(1+TVA))+'</td><td class="num">'+money(L.paid*(1+TVA))+'</td><td class="num">'+money(L.rest*(1+TVA))+'</td><td class="muted" style="font-weight:600">dont TVA '+money(L.amount*TVA)+'</td><td class="noprint"></td></tr>'
+     +'</tfoot></table></div>'
+     :'<div class="empty"><b>'+(T.n?'Aucun résultat':'Aucune société')+'</b>'+(T.n?'Modifiez la recherche ou les filtres.':'Créez votre première société cliente.')+'</div>')+'</div>'
+
+   /* récapitulatif détaillé */
+   +'<div class="card" style="margin-top:16px"><div class="card-h"><h3>Récapitulatif détaillé</h3><small>toutes les sociétés · montants en MAD HT</small></div><div class="card-b">'
+   +'<div class="rec">'
+   +'<div class="stat"><span>Taux de recouvrement</span><b>'+rate+' %</b><div class="rbar"><i style="width:'+rate+'%"></i></div><small>'+money(T.paid)+' sur '+money(T.amount)+'</small></div>'
+   +'<div class="stat"><span>Sociétés payées</span><b>'+T.paidN+' / '+payN+'</b><small>'+T.partN+' partielle(s) · '+T.unpaidN+' non payée(s)</small></div>'
+   +'<div class="stat"><span>Impayés sur expirées</span><b style="color:'+(lateV?'var(--red)':'inherit')+'">'+money(lateV)+'</b><small>'+late.length+' société(s) expirée(s) non réglée(s)</small></div>'
+   +'<div class="stat"><span>Renouvellements sous 30 j</span><b>'+money(due30v)+'</b><small>'+due30.length+' échéance(s) à venir</small></div>'
+   +'<div class="stat"><span>Montant moyen</span><b>'+money(payN?T.amount/payN:0)+'</b><small>par société payante</small></div>'
+   +'<div class="stat"><span>Total TTC</span><b>'+money(T.amount*(1+TVA))+'</b><small>dont TVA '+money(T.amount*TVA)+'</small></div>'
+   +'<div class="stat"><span>Encaissé TTC</span><b style="color:var(--grn)">'+money(T.paid*(1+TVA))+'</b><small>reste TTC '+money(T.rest*(1+TVA))+'</small></div>'
+   +'<div class="stat"><span>Revenu annuel estimé</span><b>'+money(mrr*12)+'</b><small>abonnements actifs, HT</small></div>'
+   +'</div></div></div>'
+   +'<div class="sumg">'
+   +sumTable('Par statut de paiement','répartition des encaissements',byPay)
+   +sumTable('Par état d’abonnement','actives, expirées, suspendues',bySt)
+   +sumTable('Par formule','Mensuel, Annuel, Essai',byPlan)
+   +'<div class="card"><div class="card-h"><h3>Par mode de paiement</h3><small>montants encaissés</small></div>'
+     +(mKeys.length?'<div class="tw"><table class="sumt"><thead><tr><th></th><th class="num">Nb</th><th class="num">Encaissé</th><th class="num">Part</th></tr></thead><tbody>'
+       +mKeys.map(k=>'<tr><td>'+E(k)+'</td><td class="num">'+meth[k].n+'</td><td class="num">'+money(meth[k].v)+'</td><td class="num">'+pct(meth[k].v,T.paid)+' %</td></tr>').join('')
+       +'</tbody><tfoot><tr><td>Total</td><td class="num">'+mKeys.reduce((a,k)=>a+meth[k].n,0)+'</td><td class="num">'+money(T.paid)+'</td><td class="num">100 %</td></tr></tfoot></table></div>'
+       :'<div class="empty">Aucun paiement enregistré.</div>')+'</div>'
+   +'</div>';
+
+  bindNew(m);
+  m.querySelectorAll('[data-pf]').forEach(b=>b.onclick=()=>{UI.ipf=b.dataset.pf;render()});
+  $('#ief').onchange=e=>{UI.ief=e.target.value;render()};
+  $('#isort').onchange=e=>{UI.isort=e.target.value;render()};
+  const qi=$('#iq');qi.oninput=()=>{UI.iq=qi.value;const pos=qi.selectionStart;render();const n=$('#iq');n.focus();n.setSelectionRange(pos,pos)};
+  $('#ivPrint').onclick=()=>window.print();
+  $('#ivCsv').onclick=()=>invCsv(list,L);
+  m.querySelectorAll('tr[data-iv]').forEach(tr=>{const c=all.find(x=>x.id===tr.dataset.iv);
+    tr.querySelector('.iv-pay').onclick=()=>payBox(c);
+    tr.querySelector('.iv-open').onclick=()=>openCo(c.id,'info')});
+}
+
+function invCsv(list,L){
+  const n=v=>String(Math.round((Number(v)||0)*100)/100).replace('.',',');
+  const q=v=>{const s=String(v==null?'':v);return /[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s};
+  const rows=[['N°','Société','Forme juridique','Ville','ICE','Contact','Téléphone','Formule','Début','Fin','État','Montant HT','Payé','Reste','Statut paiement','Date paiement','Mode','Référence','Note']];
+  list.forEach((c,i)=>{const p=payOf(c),r=p.rec||{};rows.push([i+1,c.name,c.legal_form,c.city,c.ice,c.contact,c.phone,c.plan,fd(c.starts_at),fd(c.expires_at),cState(c).t,n(p.amount),n(p.paid),n(p.rest),p.t,r.paid_at?fd(r.paid_at):'',r.method||'',r.ref||'',r.note||''])});
+  rows.push([]);
+  rows.push(['','TOTAL HT ('+L.n+' sociétés)','','','','','','','','','',n(L.amount),n(L.paid),n(L.rest),pct(L.paid,L.amount)+' % encaissé']);
+  rows.push(['','TOTAL TTC (TVA '+Math.round(TVA*100)+' %)','','','','','','','','','',n(L.amount*(1+TVA)),n(L.paid*(1+TVA)),n(L.rest*(1+TVA))]);
+  rows.push(['','Payées : '+L.paidN,'Partielles : '+L.partN,'Non payées : '+L.unpaidN,'Gratuites : '+L.freeN]);
+  const csv='﻿'+rows.map(r=>r.map(q).join(';')).join('\r\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='inventaire-societes-'+todayStr()+'.csv';
+  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);toast('Fichier exporté.');
+}
+
+function payBox(c){
+  const p=payOf(c),r=p.rec||{};
+  const body='<div class="row" style="margin-bottom:14px;gap:10px">'+payBadge(p)+'<span class="muted" style="font-size:13px">'+E(c.plan)+' · du '+fd(c.starts_at)+' au '+fd(c.expires_at)+' · montant <b>'+(p.amount?money(p.amount)+' MAD HT':'gratuit')+'</b></span></div>'
+   +'<div class="fg">'
+   +'<div class="field"><label>Montant payé (MAD)</label><input id="pyA" type="number" min="0" step="0.01" value="'+E(p.rec?p.paid:p.amount)+'"><small>'+(p.amount?'<a href="#" id="pyFull">Payé en totalité ('+money(p.amount)+')</a>':'Formule gratuite')+'</small></div>'
+   +'<div class="field"><label>Date de paiement</label><input id="pyD" type="date" value="'+E(r.paid_at||todayStr())+'"></div>'
+   +'<div class="field"><label>Mode de paiement</label><select id="pyM">'+PAY_METHODS.map(x=>'<option'+((r.method||'Virement')===x?' selected':'')+'>'+x+'</option>').join('')+'</select></div>'
+   +'<div class="field"><label>Référence</label><input id="pyR" value="'+E(r.ref||'')+'" placeholder="N° virement, chèque, reçu…"></div>'
+   +'<div class="field full"><label>Note</label><input id="pyN" value="'+E(r.note||'')+'" placeholder="Facultatif"></div></div>'
+   +'<div class="muted" id="pyInfo" style="margin-top:10px;font-size:13px"></div>'
+   +(r.period_end&&r.period_end!==c.expires_at?'<div class="alert warn" style="margin-top:10px">Ce paiement avait été saisi pour la période se terminant le '+fd(r.period_end)+'. L’abonnement finit maintenant le '+fd(c.expires_at)+' : vérifiez s’il couvre la nouvelle période.</div>':'');
+  const {o,close}=modal('Paiement — '+c.name,body,(p.rec?'<button type="button" class="btn danger" data-clr style="margin-inline-end:auto">Marquer non payé</button>':'')+'<button class="btn sec" data-c>Annuler</button><button class="btn" data-ok>Enregistrer</button>','md');
+  const g=s=>o.querySelector(s);
+  const info=()=>{const a=Number(g('#pyA').value)||0,rest=Math.max(0,p.amount-a);
+    g('#pyInfo').innerHTML=p.amount?(a>=p.amount?'<b style="color:var(--grn)">Payé en totalité</b>'+(a>p.amount?' — '+money(a-p.amount)+' MAD en plus du prix':''):a>0?'<b style="color:var(--amb)">Paiement partiel</b> — reste '+money(rest)+' MAD HT':'<b style="color:var(--red)">Non payé</b>'):''};
+  info();g('#pyA').oninput=info;
+  const full=g('#pyFull');if(full)full.onclick=e=>{e.preventDefault();g('#pyA').value=p.amount;info()};
+  g('[data-c]').onclick=close;
+  const done=msg=>{toast(msg);close();return refresh()};
+  const clr=g('[data-clr]');if(clr)clr.onclick=e=>run(e.currentTarget,()=>savePay(c.id,null)).then(()=>done('Paiement annulé : société marquée non payée.')).catch(()=>{});
+  g('[data-ok]').onclick=e=>{const a=Number(g('#pyA').value);
+    if(!(a>=0)){toast('Montant invalide.',true);g('#pyA').focus();return}
+    if(a===0&&p.amount>0){run(e.currentTarget,()=>savePay(c.id,null)).then(()=>done('Société marquée non payée.')).catch(()=>{});return}
+    if(!g('#pyD').value){toast('Saisissez la date de paiement.',true);return}
+    const rec={amount:a,paid_at:g('#pyD').value,method:g('#pyM').value,ref:g('#pyR').value.trim(),note:g('#pyN').value.trim(),period_end:c.expires_at||null};
+    run(e.currentTarget,()=>savePay(c.id,rec)).then(()=>done('Paiement enregistré.')).catch(()=>{})};
+  setTimeout(()=>g('#pyA').select(),40);
+}
+
 /* ---------- comptes à rattacher ---------- */
 function renderPend(m){
   const u=OV.unassigned,cs=OV.companies;
@@ -882,7 +1102,7 @@ function renderPend(m){
 /* ---------- journal ---------- */
 function logList(l){
   if(!l.length)return '<div class="empty" style="padding:16px">Aucune action pour le moment.</div>';
-  const det=d=>{if(!d)return '';const p=[];if(d.email)p.push(d.email);if(d.role)p.push(d.role);if(d.formule)p.push(d.formule);if(d.max)p.push(d.max+' util. max');if(d.nouvelle_fin)p.push('fin : '+fd(d.nouvelle_fin));else if(d.expire)p.push('fin : '+fd(d.expire));if(d.actif!=null)p.push(d.actif?'actif':'inactif');if(d.onglets)p.push('onglets : '+d.onglets);if(d.canal)p.push('par '+d.canal);return p.join(' · ')};
+  const det=d=>{if(!d)return '';const p=[];if(d.email)p.push(d.email);if(d.role)p.push(d.role);if(d.formule)p.push(d.formule);if(d.max)p.push(d.max+' util. max');if(d.nouvelle_fin)p.push('fin : '+fd(d.nouvelle_fin));else if(d.expire)p.push('fin : '+fd(d.expire));if(d.actif!=null)p.push(d.actif?'actif':'inactif');if(d.onglets)p.push('onglets : '+d.onglets);if(d.canal)p.push('par '+d.canal);if(d.montant!=null)p.push(money(d.montant)+' MAD');if(d.mode)p.push(d.mode);return p.join(' · ')};
   return '<div class="log">'+l.map(x=>'<div><time>'+fdt(x.at)+'</time><span><b>'+E(x.action)+'</b>'+(x.company_name?' — '+E(x.company_name):'')+'<br><small>'+E(det(x.detail))+(x.actor_email?' · par '+E(x.actor_email):'')+'</small></span></div>').join('')+'</div>';
 }
 function renderLog(m){m.innerHTML=head('Journal','Toutes les actions faites depuis la console et par les administrateurs des sociétés.')+'<div class="card"><div class="card-b">'+logList(OV.log)+'</div></div>'}
@@ -896,6 +1116,7 @@ function renderSetup(m){
    +'<li><div><b>Créer le projet Supabase</b>Sur supabase.com, créez un projet (région Europe — Frankfurt ou Paris).</div></li>'
    +'<li><div><b>Préparer la base</b>Supabase › SQL Editor › New query : collez tout le fichier <code>Tadbir_Supabase_MultiSocietes.sql</code> puis « Run ».</div></li>'
    +'<li><div><b>Activer les paramètres et les relances</b>Exécutez aussi <code>Tadbir_Parametres_Relances.sql</code> (une seule fois). Il permet de modifier les informations des sociétés (adresse, ICE, logo, cachet…) et garde l’historique des relances.</div></li>'
+   +'<li><div><b>Activer l’inventaire des paiements</b>Exécutez aussi <code>Tadbir_Inventaire.sql</code> (une seule fois). Il enregistre dans la base le statut payé / non payé de chaque société, visible depuis tous vos appareils.</div></li>'
    +'<li><div><b>Activer les onglets par société et par utilisateur</b>Dans le SQL Editor, exécutez aussi le fichier <code>Tadbir_Onglets.sql</code> (une seule fois). Il ajoute le réglage « Onglets » utilisé par la console et l’application.</div></li>'
    +'<li><div><b>Relier la console et l’application</b>Supabase › Project Settings › API : copiez « Project URL » et la clé « anon public ». Collez-les dans cette console (écran de connexion) et dans l’application, en haut du fichier : <code>BSM_CLOUD_CONFIG={url:"…",anonKey:"…"}</code>.</div></li>'
    +'<li><div><b>Devenir super-administrateur</b>Créez votre compte dans Supabase › Authentication › Users (« Add user »), connectez-vous à cette console, puis exécutez une fois la commande affichée à l’écran dans le SQL Editor.</div></li>'
