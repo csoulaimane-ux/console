@@ -805,6 +805,7 @@ function renderParams(tb,c){
    +'<div class="sect">Logo, cachet et signature</div><div class="imgs" id="pi"></div>'
    +'<div class="savebar"><button class="btn" id="pSave">Enregistrer les informations</button><button class="btn sec" id="pFill" type="button">Reprendre la fiche société</button><span class="muted" style="font-size:12.5px">'+(S.company?'':'Jamais configuré : l’application garde ses valeurs actuelles tant que vous n’enregistrez pas.')+'</span></div>'
    +'<div class="sect" style="margin-top:28px">Attestation fiscale</div>'
+   +(S.tax&&(S.tax.issueDate||S.tax.verificationCode)&&S.tax.ownerCo!==String(c.id)?'<div class="alert warn" style="margin-bottom:10px">Vérifiez que cette attestation appartient bien à <b>'+E(c.name)+'</b>. Si oui, cliquez sur « Enregistrer l’attestation » pour qu’elle s’affiche. Sinon, cliquez sur « Supprimer l’attestation ».</div>':'')
    +'<p class="muted" style="margin:-4px 0 12px;font-size:13px">Date d’émission, QR fiscal et code de vérification imprimés sur les factures. Les anciennes factures restent inchangées. La société peut aussi la mettre à jour depuis l’application.</p>'
    +'<div class="fg"><div class="field"><label>Date d’émission</label><input type="date" id="tI" value="'+E(tax.issueDate||'')+'"></div>'
    +'<div class="field"><label>Date d’expiration</label><input type="date" id="tE" value="'+E(tax.expiryDate||'')+'" disabled><small>Calculée automatiquement : émission + 6 mois.</small></div>'
@@ -812,7 +813,7 @@ function renderParams(tb,c){
    +'<div class="field"><label>IFU</label><input id="tF" value="'+E(tax.ifu||'')+'"></div>'
    +'<div class="field full"><label>Lien de vérification (QR)</label><input id="tU" value="'+E(tax.qrUrl||'')+'" placeholder="https://attestation.tax.gov.ma/…"></div></div>'
    +'<div class="imgs" style="margin-top:12px" id="ti"></div>'
-   +'<div class="savebar"><button class="btn" id="tSave">Enregistrer l’attestation</button></div></div>';
+   +'<div class="savebar"><button class="btn" id="tSave">Enregistrer l’attestation</button><button class="btn sec" id="tDel" type="button">Supprimer l’attestation</button></div></div>';
   const drawImgs=()=>{
     $('#pi').innerHTML=CO_IMGS.map(m=>imgTile(m[0],m[1],imgs[m[0]])).join('');
     $('#ti').innerHTML=imgTile('taxqr','QR de l’attestation',taxQr);
@@ -825,13 +826,18 @@ function renderParams(tb,c){
   $('#tI').onchange=()=>{$('#tE').value=addSix($('#tI').value)};
   $('#pFill').onclick=()=>{const map={address:c.address,phones:c.phone,email:c.email,ice:c.ice,if:c.if_num,rc:c.rc,cnss:c.cnss,name:c.name};let n=0;
     tb.querySelectorAll('#pf input').forEach(i=>{const v=map[i.dataset.k];if(v&&!i.value.trim()){i.value=v;n++}});toast(n?n+' champ(s) repris de la fiche société.':'Rien à reprendre : les champs sont déjà remplis.')};
+  $('#tDel').onclick=e=>{if(!window.confirm('Supprimer l’attestation fiscale de '+c.name+' ?'))return;
+    const o={issueDate:'',expiryDate:'',verificationCode:'',ifu:'',qrUrl:'',qrImage:'',ownerCo:String(c.id)};
+    run(e.currentTarget,()=>API.setSettings(c.id,'tax',o),'Attestation supprimée.').then(()=>{DET.settings.tax=o;S.tax=o;render()}).catch(()=>{})};
   $('#pSave').onclick=e=>{
     const o=JSON.parse(JSON.stringify(S.company||{}));o.info=Object.assign({},o.info||{});
     tb.querySelectorAll('#pf input').forEach(i=>{const v=i.value.trim();if(i.dataset.k==='name'&&!v)delete o.info.name;else o.info[i.dataset.k]=v});
     CO_IMGS.forEach(m=>{if(imgs[m[0]])o[m[0]]=imgs[m[0]];else delete o[m[0]]});
     run(e.currentTarget,()=>API.setSettings(c.id,'company',o),'Informations enregistrées — envoyées à l’application.').then(()=>{DET.settings.company=o;S.company=o}).catch(()=>{})};
   $('#tSave').onclick=e=>{const issue=$('#tI').value;if(!issue){toast('Saisissez la date d’émission.',true);return}
-    const o=Object.assign({},S.tax||{},{issueDate:issue,expiryDate:addSix(issue),verificationCode:$('#tC').value.trim(),ifu:$('#tF').value.trim(),qrUrl:$('#tU').value.trim(),qrImage:taxQr||''});
+    const o=Object.assign({},S.tax||{},{issueDate:issue,expiryDate:addSix(issue),verificationCode:$('#tC').value.trim(),ifu:$('#tF').value.trim(),qrUrl:$('#tU').value.trim(),qrImage:taxQr||'',ownerCo:String(c.id)});
+    const dg=v=>String(v||'').replace(/\D/g,''),f1=dg(o.ifu),f2=dg(((S.company||{}).info||{}).if||c.if_num);
+    if(f1&&f2&&f1!==f2&&!window.confirm('L’IFU de l’attestation ('+f1+') est différent de l’identifiant fiscal de '+c.name+' ('+f2+'). Enregistrer quand même ?'))return;
     run(e.currentTarget,()=>API.setSettings(c.id,'tax',o),'Attestation fiscale enregistrée — envoyée à l’application.').then(()=>{DET.settings.tax=o;S.tax=o}).catch(()=>{})};
 }
 
