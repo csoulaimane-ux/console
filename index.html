@@ -46,7 +46,15 @@ window.TB_THEMES=[
   /* ---- date et heure ---- */
   function p2(n){return (n<10?'0':'')+n}
   var JOURS=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
-  function parts(){var d=new Date();return {h:p2(d.getHours()),m:p2(d.getMinutes()),s:p2(d.getSeconds()),day:JOURS[d.getDay()],date:p2(d.getDate())+'/'+p2(d.getMonth()+1)+'/'+d.getFullYear()}}
+  /* heure du Maroc (Africa/Casablanca), quel que soit le réglage de l'appareil */
+  var TZ='Africa/Casablanca',FMT=null;
+  try{FMT=new Intl.DateTimeFormat('en-GB',{timeZone:TZ,weekday:'short',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'})}catch(e){}
+  var WD={Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6};
+  function parts(){
+    if(FMT){var o={};FMT.formatToParts(new Date()).forEach(function(x){o[x.type]=x.value});
+      return {h:p2(+o.hour%24),m:o.minute,s:o.second,day:JOURS[WD[o.weekday]],date:o.day+'/'+o.month+'/'+o.year}}
+    var d=new Date(Date.now()+60*60000+new Date().getTimezoneOffset()*60000);
+    return {h:p2(d.getHours()),m:p2(d.getMinutes()),s:p2(d.getSeconds()),day:JOURS[d.getDay()],date:p2(d.getDate())+'/'+p2(d.getMonth()+1)+'/'+d.getFullYear()}}
   window.tbClock=function(){var x=parts();return x.h+':'+x.m+' · '+x.date};
   window.tbClockHTML=function(){var x=parts();
     return '<span class="ck-hm"><span data-ck="h">'+x.h+'</span><i>:</i><span data-ck="m">'+x.m+'</span></span>'
@@ -689,7 +697,7 @@ function render(){
   if(UI.coId&&DET)return renderDetail(m);
   ({dash:renderDash,cos:renderCos,inv:renderInv,rel:renderRel,pend:renderPend,log:renderLog,setup:renderSetup}[UI.page]||renderDash)(m);
 }
-function head(t,sub,right){return '<div class="head"><div><h1>'+E(t)+'</h1>'+(sub?'<p>'+sub+'</p>':'')+'</div><div class="clk" role="timer" aria-live="off">'+tbClockHTML()+'</div><div class="row">'+(right||'')+'</div></div>'}
+function head(t,sub,right){return '<div class="head"><div><h1>'+E(t)+'</h1>'+(sub?'<p>'+sub+'</p>':'')+'</div><div class="clk" role="timer" aria-live="off" title="Heure du Maroc (Casablanca)">'+tbClockHTML()+'</div><div class="row">'+(right||'')+'</div></div>'}
 const newBtn='<button class="btn" data-act="new">'+ICON.plus+'Nouvelle société</button>';
 function bindNew(m){m.querySelectorAll('[data-act=new]').forEach(b=>b.onclick=()=>companyForm(null))}
 async function loadDet(id){const d=await API.detail(id);try{d.tabs=await API.getTabs(id)||{company:null,members:{}}}catch(e){d.tabs=null;d.tabsErr=e.message}return d}
@@ -749,7 +757,7 @@ function renderDetail(m){
   const c=DET.company,s=cState(c),mem=DET.members,inv=DET.invitations;
   const actN=mem.filter(x=>x.active).length;
   const tabs=[['users','Utilisateurs ('+mem.length+')'],['info','Informations'],['params','Paramètres'],['act','Activité'],['log','Journal']];
-  m.innerHTML='<div class="crumb crow"><button id="back">← Sociétés</button><div class="clk" role="timer" aria-live="off">'+tbClockHTML()+'</div><span></span></div>'
+  m.innerHTML='<div class="crumb crow"><button id="back">← Sociétés</button><div class="clk" role="timer" aria-live="off" title="Heure du Maroc (Casablanca)">'+tbClockHTML()+'</div><span></span></div>'
    +'<div class="card" style="margin-bottom:16px"><div class="dh"><div><h2>'+E(c.name)+'</h2><div class="row">'+badge(c)+'<span class="pill">'+E(c.plan)+'</span><span class="muted">'+E([c.legal_form,c.city].filter(Boolean).join(' · '))+'</span></div></div>'
    +'<div class="row"><button class="btn sec sm" data-x="m1">+1 mois</button><button class="btn sec sm" data-x="y1">+1 an</button>'
    +(c.status==='suspended'?'<button class="btn acc sm" data-x="on">Réactiver l’accès</button>':'<button class="btn danger sm" data-x="off">Suspendre</button>')
